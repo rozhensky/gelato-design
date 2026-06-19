@@ -284,8 +284,9 @@
             rec.mr.onstop = function () { finalizeRecording(); };
             rec.mr.start();
             haptic('impact');
-            updateRecUI();
-            rec.int = setInterval(updateRecUI, 250);
+            setRecState();
+            tickRec();
+            rec.int = setInterval(tickRec, 250);
         }).catch(function () {
             toast('Немає доступу до мікрофона');
         });
@@ -303,10 +304,10 @@
         if (rec.stream) { rec.stream.getTracks().forEach(function (t) { t.stop(); }); }
         var qid = rec.qid, chunks = rec.chunks, dur = (Date.now() - rec.t0) / 1000;
         rec.active = false; rec.mr = null; rec.stream = null; rec.chunks = []; rec.qid = null;
-        if (discard || !chunks.length) { updateRecUI(); return; }
+        if (discard || !chunks.length) { setRecState(); return; }
         var type = (chunks[0] && chunks[0].type) || 'audio/webm';
         var blob = new Blob(chunks, { type: type });
-        if (blob.size < 600) { toast('Запис надто короткий'); updateRecUI(); return; }
+        if (blob.size < 600) { toast('Запис надто короткий'); setRecState(); return; }
         var a = ansFor(qid);
         var clip = { id: uid(), blob: blob, mime: type, dur: dur, ts: Date.now() };
         a.voices.push(clip);
@@ -316,20 +317,26 @@
         if (state.pos >= 0 && state.pos <= 9 && 'q' + QUESTIONS[state.pos].n === qid) render();
     }
 
-    function updateRecUI() {
+    // sets the button icon/classes ONCE per state change (no re-render on the timer tick → no flicker)
+    function setRecState() {
         var btn = $('#recBtn'), hint = $('#recHint'), wrap = $('#recWrap');
         if (!btn) return;
         if (rec.active) {
             btn.classList.add('is-rec');
             btn.innerHTML = '<iconify-icon icon="solar:stop-bold"></iconify-icon>';
             if (wrap) wrap.classList.add('live');
-            if (hint) { hint.classList.add('live'); hint.textContent = '● Запис… ' + fmtTime((Date.now() - rec.t0) / 1000); }
+            if (hint) hint.classList.add('live');
         } else {
             btn.classList.remove('is-rec');
             btn.innerHTML = '<iconify-icon icon="solar:microphone-3-bold"></iconify-icon>';
             if (wrap) wrap.classList.remove('live');
             if (hint) { hint.classList.remove('live'); hint.textContent = 'Натисніть, щоб записати голосову'; }
         }
+    }
+    // updates ONLY the timer text on the interval
+    function tickRec() {
+        var hint = $('#recHint');
+        if (hint && rec.active) hint.textContent = '● Запис… ' + fmtTime((Date.now() - rec.t0) / 1000);
     }
 
     /* ---------- playback (single shared <audio>) ---------- */
@@ -565,7 +572,7 @@
             '<button class="btn btn-primary" id="nextBtn">' + (last ? 'До огляду' : 'Далі') + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
         );
 
-        updateRecUI();
+        setRecState();
         $('#recBtn').onclick = function () { if (rec.active) stopRecording(false); else startRecording(qid); };
         document.querySelectorAll('[data-play]').forEach(function (b) {
             b.onclick = function () { togglePlay(qid, b.getAttribute('data-clip')); };
