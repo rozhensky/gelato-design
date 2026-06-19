@@ -84,6 +84,16 @@
         links: { label: 'Посилання', icon: 'solar:link-linear' },
         video: { label: 'Відео', icon: 'solar:videocamera-record-linear' }
     };
+    var COUNTRY_CODES = [
+        { f: '🇺🇦', c: '+380' }, { f: '🇵🇱', c: '+48' }, { f: '🇩🇪', c: '+49' }, { f: '🇬🇧', c: '+44' }, { f: '🇺🇸', c: '+1' },
+        { f: '🇫🇷', c: '+33' }, { f: '🇪🇸', c: '+34' }, { f: '🇮🇹', c: '+39' }, { f: '🇳🇱', c: '+31' }, { f: '🇨🇿', c: '+420' },
+        { f: '🇸🇰', c: '+421' }, { f: '🇷🇴', c: '+40' }, { f: '🇲🇩', c: '+373' }, { f: '🇱🇹', c: '+370' }, { f: '🇱🇻', c: '+371' },
+        { f: '🇪🇪', c: '+372' }, { f: '🇬🇪', c: '+995' }, { f: '🇰🇿', c: '+7' }, { f: '🇹🇷', c: '+90' }, { f: '🇦🇪', c: '+971' },
+        { f: '🇮🇱', c: '+972' }, { f: '🇨🇭', c: '+41' }, { f: '🇦🇹', c: '+43' }, { f: '🇧🇪', c: '+32' }, { f: '🇸🇪', c: '+46' },
+        { f: '🇳🇴', c: '+47' }, { f: '🇩🇰', c: '+45' }, { f: '🇫🇮', c: '+358' }, { f: '🇮🇪', c: '+353' }, { f: '🇵🇹', c: '+351' },
+        { f: '🇬🇷', c: '+30' }, { f: '🇧🇬', c: '+359' }, { f: '🇭🇺', c: '+36' }, { f: '🇭🇷', c: '+385' }, { f: '🇨🇦', c: '+1' },
+        { f: '🇦🇺', c: '+61' }, { f: '🇮🇳', c: '+91' }, { f: '🇯🇵', c: '+81' }, { f: '🇧🇷', c: '+55' }, { f: '🇸🇦', c: '+966' }
+    ];
 
     /* ---------- tiny utils ---------- */
     var $ = function (sel, root) { return (root || document).querySelector(sel); };
@@ -456,6 +466,7 @@
         var tgLine = (tgUser && tgUser.username)
             ? '<div class="tg-chip"><iconify-icon icon="solar:chat-round-line-linear"></iconify-icon> Telegram: @' + esc(tgUser.username) + '</div>'
             : '';
+        var codeOpts = COUNTRY_CODES.map(function (cc) { return '<option value="' + cc.c + '">' + cc.f + ' ' + cc.c + '</option>'; }).join('');
         app.innerHTML =
             topChrome('Контакти') +
             '<div class="card">' +
@@ -465,20 +476,33 @@
                 tgLine +
                 '<div class="field"><label>Імʼя <span class="req">*</span></label><input id="cName" type="text" value="' + esc(defName) + '" placeholder="Як до вас звертатися"></div>' +
                 '<div class="field"><label>Email</label><input id="cEmail" type="email" inputmode="email" value="' + esc(c.email || '') + '" placeholder="you@example.com"></div>' +
-                '<div class="field"><label>Телефон</label><input id="cPhone" type="tel" inputmode="tel" value="' + esc(c.phone || '') + '" placeholder="+380…"></div>' +
-                '<div class="field"><label>Соцмережі</label><input id="cSocials" type="text" value="' + esc(c.socials || '') + '" placeholder="Instagram, LinkedIn… (посилання)"></div>' +
+                '<div class="field"><label>Телефон</label><div class="phone-row"><select id="cCode" class="phone-code">' + codeOpts + '</select><input id="cPhone" type="tel" inputmode="tel" placeholder="номер телефону"></div></div>' +
+                '<div class="field"><label>Соцмережі</label><input id="cSocials" type="url" inputmode="url" value="' + esc(c.socials || '') + '" placeholder="Посилання на соцмережі"></div>' +
                 '<p class="help" style="font-size:12px;margin-top:14px">Обовʼязково: імʼя та хоча б один контакт (email, телефон або соцмережі).</p>' +
             '</div>';
         setBar(
             '<button class="btn btn-ghost narrow" id="cBack"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>' +
             '<button class="btn btn-primary" id="cNext">Далі <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
         );
+        var codeSel = $('#cCode'), phoneInp = $('#cPhone');
+        if (c.phone) {
+            var matched = '';
+            for (var k = 0; k < COUNTRY_CODES.length; k++) { if (c.phone.indexOf(COUNTRY_CODES[k].c + ' ') === 0) { matched = COUNTRY_CODES[k].c; break; } }
+            if (matched) { codeSel.value = matched; phoneInp.value = c.phone.slice(matched.length + 1); }
+            else { phoneInp.value = c.phone; }
+        }
+        // keep the focused field visible when the keyboard opens
+        ['cName', 'cEmail', 'cPhone', 'cSocials'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.addEventListener('focus', function () { setTimeout(function () { try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} }, 300); });
+        });
         $('#cBack').onclick = function () { goTo(-1); };
         $('#cNext').onclick = function () {
+            var pnat = phoneInp.value.trim();
             var data = {
                 name: $('#cName').value.trim(),
                 email: $('#cEmail').value.trim(),
-                phone: $('#cPhone').value.trim(),
+                phone: pnat ? (codeSel.value + ' ' + pnat) : '',
                 socials: $('#cSocials').value.trim()
             };
             if (!data.name) { toast('Вкажіть імʼя'); return; }
