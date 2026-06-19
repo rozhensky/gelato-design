@@ -158,7 +158,6 @@
 
     var dash = '<span class="muted">—</span>';
     var cinfo = [
-      ["Імʼя", brief.contact_name ? esc(brief.contact_name) : dash],
       ["Email", brief.email ? '<a href="mailto:' + esc(brief.email) + '">' + esc(brief.email) + "</a>" : dash],
       ["Телефон", brief.phone ? '<a href="tel:' + esc(brief.phone) + '">' + esc(brief.phone) + "</a>" : dash],
       ["Соцмережі", brief.socials ? esc(brief.socials) : dash],
