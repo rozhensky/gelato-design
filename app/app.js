@@ -252,7 +252,8 @@
 
     function setBackButton() {
         if (!tg || !tg.BackButton) return;
-        if (state.pos === 'contact' || (state.pos > -1 && state.pos < 11)) tgCall(function () { tg.BackButton.show(); });
+        var show = state.pos === 'contact' || (state.pos >= 1 && state.pos <= 10);
+        if (show) tgCall(function () { tg.BackButton.show(); });
         else tgCall(function () { tg.BackButton.hide(); });
     }
     if (tg && tg.BackButton) tgCall(function () { tg.BackButton.onClick(function () { goBack(); }); });
@@ -260,9 +261,8 @@
     function goBack() {
         stopRecording(true);
         if (state.pos === 'contact') { state.pos = -1; render(); return; }
-        if (state.pos === 0) state.pos = -1;
-        else if (state.pos >= 1 && state.pos <= 10) state.pos -= 1;
-        render();
+        if (state.pos === 0) return; // first question — no way back to intro/contacts
+        if (state.pos >= 1 && state.pos <= 10) { state.pos -= 1; render(); }
     }
     function goTo(pos) { stopRecording(true); state.pos = pos; window.scrollTo(0, 0); render(); }
 
@@ -480,10 +480,7 @@
                 '<div class="field"><label>Соцмережі</label><input id="cSocials" type="url" inputmode="url" value="' + esc(c.socials || '') + '" placeholder="Посилання на соцмережі"></div>' +
                 '<p class="help" style="font-size:12px;margin-top:14px">Обовʼязково: імʼя та хоча б один контакт (email, телефон або соцмережі).</p>' +
             '</div>';
-        setBar(
-            '<button class="btn btn-ghost narrow" id="cBack"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>' +
-            '<button class="btn btn-primary" id="cNext">Далі <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
-        );
+        setBar('<button class="btn btn-primary" id="cNext">Розпочати <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
         var codeSel = $('#cCode'), phoneInp = $('#cPhone');
         if (c.phone) {
             var matched = '';
@@ -496,7 +493,6 @@
             var el = document.getElementById(id);
             if (el) el.addEventListener('focus', function () { setTimeout(function () { try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} }, 300); });
         });
-        $('#cBack').onclick = function () { goTo(-1); };
         $('#cNext').onclick = function () {
             var pnat = phoneInp.value.trim();
             var data = {
@@ -586,7 +582,7 @@
             '</div>';
 
         setBar(
-            '<button class="btn btn-ghost narrow" id="prevBtn"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>' +
+            (idx > 0 ? '<button class="btn btn-ghost narrow" id="prevBtn"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>' : '') +
             '<button class="btn btn-ghost narrow" id="goReview"><iconify-icon icon="solar:checklist-minimalistic-linear"></iconify-icon> Огляд</button>' +
             '<button class="btn btn-primary" id="nextBtn">' + (last ? 'До огляду' : 'Далі') + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
         );
@@ -611,7 +607,7 @@
             $('#linkAdd').onclick = doAdd;
             inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
         }
-        $('#prevBtn').onclick = function () { goTo(idx === 0 ? -1 : idx - 1); };
+        var pv = document.getElementById('prevBtn'); if (pv) pv.onclick = function () { goTo(idx - 1); };
         $('#goReview').onclick = function () { goTo(10); };
         $('#nextBtn').onclick = function () { goTo(idx + 1 > 9 ? 10 : idx + 1); };
     }
@@ -692,11 +688,18 @@
         });
     }
 
+    function entryPos() {
+        if (!contactsDone()) return -1; // new user -> intro -> contacts
+        for (var i = 0; i < QUESTIONS.length; i++) { if (!isAnswered('q' + QUESTIONS[i].n)) return i; }
+        return 10; // everything answered -> review
+    }
+
     QUESTIONS.forEach(function (q) { ansFor('q' + q.n); });
     if (Sync.enabled) {
         app.innerHTML = '<div class="card" style="margin-top:24px"><p class="help">Завантаження брифу…</p></div>';
-        Sync.getBrief().then(function (d) { if (d && d.exists) hydrate(d); render(); }).catch(function () { render(); });
+        Sync.getBrief().then(function (d) { if (d && d.exists) hydrate(d); state.pos = entryPos(); render(); }).catch(function () { state.pos = entryPos(); render(); });
     } else {
+        state.pos = entryPos();
         render();
     }
 })();
