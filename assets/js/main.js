@@ -65,8 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const slides = [...root.querySelectorAll('.gs-slide')];
     const dots = [...root.querySelectorAll('.gs-dot')];
     const curEl = root.querySelector('.gs-cur');
-    const how = root.querySelector('.gs-how');
-    const AUTO = 4500;
+    const prev = root.querySelector('.gs-prev');
+    const next = root.querySelector('.gs-next');
+    const AUTO = 10000;
     let i = 0, timer = null;
 
     function show(n) {
@@ -79,8 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function startAuto() { if (reduce) return; stopAuto(); timer = setInterval(() => show(i + 1), AUTO); }
     function go(n) { show(n); startAuto(); }   // reset the timer on any manual nav
 
-    // primary control: "Як це працює" advances the cards; they also auto-advance when idle
-    if (how) how.addEventListener('click', () => go(i + 1));
+    // arrows + dots for manual nav; cards also auto-advance when idle
+    if (prev) prev.addEventListener('click', () => go(i - 1));
+    if (next) next.addEventListener('click', () => go(i + 1));
     dots.forEach((d, k) => d.addEventListener('click', () => go(k)));
     root.addEventListener('mouseenter', stopAuto);
     root.addEventListener('mouseleave', startAuto);
