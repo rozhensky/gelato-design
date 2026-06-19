@@ -68,3 +68,9 @@ html, body { overflow-x: hidden; }
 /* ===================== floating CTA reveal ===================== */
 #floatCta { opacity: 0; transform: translateY(14px); pointer-events: none; transition: opacity .3s ease, transform .3s ease, background-color .2s ease; }
 #floatCta.cta-show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+
+/* ===================== table scroll hint (mobile) ===================== */
+.cost-swipe { animation: costSwipe 1.3s ease-in-out infinite; }
+@keyframes costSwipe { 0%, 100% { transform: translateX(-3px); } 50% { transform: translateX(4px); } }
+@media (prefers-reduced-motion: reduce) { .cost-swipe { animation: none; } }

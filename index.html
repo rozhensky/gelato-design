@@ -27,7 +27,7 @@
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <link rel="stylesheet" href="assets/css/styles.css?v=9">
+    <link rel="stylesheet" href="assets/css/styles.css?v=10">
 
     <!-- ============ SEO: JSON-LD ============ -->
     <script type="application/ld+json">
@@ -285,7 +285,7 @@
             <div class="flex items-center gap-3 text-[11px] uppercase eyebrow text-stone-400 mb-6"><span class="w-1.5 h-1.5 rounded-full bg-[#E65C00]"></span> <span>Скільки це коштує насправді</span></div>
             <h2 class="text-3xl md:text-5xl font-medium tracking-tight leading-[1.08] max-w-[22ch]"><span class="gsap-reveal block text-stone-900">Ринкові ціни —</span><span class="gsap-reveal block text-stone-400 text-xl md:text-3xl leading-tight mt-1">порівняно з нашим рішенням</span></h2>
             <p class="text-sm md:text-base text-stone-500 mt-5 max-w-[64ch] leading-relaxed">Ми не пропонуємо одразу вкладати десятки тисяч. Спершу швидко й дешево перевіряємо ідею — і даємо живий продукт у руки якнайраніше. Ось реальні ринкові ціни (2026) поруч із нашими: <span class="text-stone-900 font-medium">прототип у нас ~10× дешевше за ринок</span>.</p>
-            <div class="mt-10 overflow-x-auto">
+            <div id="costScroll" class="mt-10 overflow-x-auto">
                 <table class="w-full min-w-[680px] border-separate border-spacing-0 text-sm">
                     <thead>
                         <tr class="text-left">
@@ -303,6 +303,7 @@
                     </tbody>
                 </table>
             </div>
+            <div id="costScrollHint" class="md:hidden flex items-center justify-center gap-2 mt-3 text-[12px] text-stone-400 transition-opacity duration-300"><iconify-icon icon="mdi:gesture-swipe-horizontal" width="18" class="cost-swipe text-[#E65C00]"></iconify-icon> Гортайте таблицю вбік</div>
             <p class="text-[11px] text-stone-400 mt-4 leading-relaxed">Ринкові діапазони — за даними <a href="https://www.teacode.io/blog/mvp-development-costs" target="_blank" rel="noopener" class="underline hover:text-stone-600">TeaCode, «MVP Development Costs 2026»</a>. Прототип і Proof of Concept у Gelato — фіксована ціна; <span class="mvp" tabindex="0">MVP</span> та MLP — поетапно спринтами. Ринок у $, наші ціни в €.</p>
         </div>
     </section>
@@ -705,6 +706,6 @@
         </div>
     </div>
 
-<script src="assets/js/main.js?v=11"></script>
+<script src="assets/js/main.js?v=12"></script>
 </body>
 </html>

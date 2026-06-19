@@ -119,3 +119,15 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', update);
     update();
 })();
+
+
+// ===== Cost table: hide the "swipe" hint once scrolled / if it fits =====
+(function () {
+    var sc = document.getElementById('costScroll');
+    var hint = document.getElementById('costScrollHint');
+    if (!sc || !hint) return;
+    sc.addEventListener('scroll', function () { if (sc.scrollLeft > 8) hint.classList.add('opacity-0'); }, { passive: true });
+    function check() { if (sc.scrollWidth <= sc.clientWidth + 4) hint.classList.add('opacity-0'); }
+    window.addEventListener('resize', check);
+    check();
+})();
