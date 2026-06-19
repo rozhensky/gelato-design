@@ -58,3 +58,8 @@ html, body { overflow-x: hidden; }
 }
 .mvp:hover::after, .mvp:focus::after { opacity: 1; visibility: visible; transform: translateX(-50%); }
 .mvp:hover::before, .mvp:focus::before { opacity: 1; visibility: visible; }
+
+/* Larger spacing between sections on desktop (lg:mt-5 -> 4.25rem) */
+@media (min-width: 1024px) {
+    .lg\:mt-5 { margin-top: 4.25rem !important; }
+}
