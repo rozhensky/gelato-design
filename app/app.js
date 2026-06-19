@@ -62,7 +62,9 @@
           formats: ['links', 'video', 'voice'] },
         { n: 8,  title: 'Бренд, тон і стиль',
           help: 'Який настрій і характер у продукту? Приклади візуалу чи брендів, що резонують.',
-          formats: ['voice', 'links'] },
+          formats: ['voice', 'links'],
+          hint: { url: 'https://www.aura.build/design-systems', label: 'Відкрити Aura',
+                  text: 'На Aura зібрані різні дизайн-системи продуктів. Знайдіть ту, що подобається найбільше, відкрийте її, скопіюйте посилання — і вставте нижче. Це допоможе нам зрозуміти ваші смаки.' } },
         { n: 9,  title: 'Монетизація',
           help: 'Як продукт заробляє (підписка, разово, комісія…) і хто за це платить?',
           formats: ['voice'] },
@@ -472,6 +474,14 @@
             '</div>'
         ) : '';
 
+        var hintHtml = q.hint ? (
+            '<a class="hint" href="' + esc(q.hint.url) + '" target="_blank" rel="noopener">' +
+                '<span class="hint-ic"><iconify-icon icon="solar:palette-2-linear"></iconify-icon></span>' +
+                '<span class="hint-body"><span class="hint-text">' + esc(q.hint.text) + '</span>' +
+                '<span class="hint-link">' + esc(q.hint.label) + ' <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></span></span>' +
+            '</a>'
+        ) : '';
+
         var last = idx === QUESTIONS.length - 1;
         app.innerHTML =
             topChrome('Питання ' + q.n + ' з ' + QUESTIONS.length) +
@@ -491,6 +501,7 @@
                     voicesHtml +
                 '</div>' +
 
+                hintHtml +
                 linkBlock +
             '</div>';
 
