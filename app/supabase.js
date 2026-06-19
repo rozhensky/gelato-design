@@ -8,6 +8,6 @@
 // (IndexedDB) exactly as before — nothing breaks.
 // ============================================================
 window.GELATO_SUPABASE = {
-  url: "",      // e.g. https://abcdefgh.supabase.co
-  anonKey: "",  // anon / publishable key
+  url: "https://rngahwncqtdnckqeqhnd.supabase.co",      // e.g. https://abcdefgh.supabase.co
+  anonKey: "sb_publishable_onYbcQchgZS7mdJ8BXgyvQ_DLQJUupr",  // anon / publishable key
 };

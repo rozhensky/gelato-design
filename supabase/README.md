@@ -1,51 +1,189 @@
-# Бекенд брифу — налаштування (Supabase)
+# Бекенд брифу — покрокове налаштування (Supabase)
 
-Усе нижче робиться **один раз**. Код уже в репо; треба лише створити проєкт і вставити ключі.
+Це повна інструкція «з нуля». Робиться **один раз**, ~30–40 хв. Увесь код уже в репозиторії — тобі треба лише натиснути кнопки в дашборді Supabase і вставити кілька значень.
 
-## 1. Проєкт і ключі
-1. Створи проєкт на [supabase.com](https://supabase.com).
-2. **Settings → API**: скопіюй `Project URL` і `anon public` ключ → встав у [`app/supabase.js`](../app/supabase.js). (Ці значення публічні, їх можна комітити.)
-3. Звідти ж візьми `service_role` ключ — він **секретний**, у файли не клади.
+---
 
-## 2. База
-4. **SQL Editor** → встав і виконай [`supabase/schema.sql`](schema.sql).
-5. Додай свою пошту в адміни:
+## Спершу — що ми взагалі будуємо (простими словами)
+
+Зараз міні-ап `gelato.design/app/` зберігає голосові **лише в браузері клієнта**. Ми хочемо, щоб усе летіло до тебе. Для цього потрібні 4 «деталі», і всі вони — всередині Supabase (це безкоштовний хмарний бекенд):
+
+| Деталь | Що робить | Аналогія |
+|---|---|---|
+| **База даних** (Postgres) | зберігає текст відповідей, посилання, хто заповнював | таблиця Excel |
+| **Сховище** (Storage) | зберігає самі аудіофайли | папка Dropbox |
+| **Функції** (Edge Functions) | приймають дані від міні-апу й кладуть у базу/сховище; роблять транскрипцію | маленькі сервери-помічники |
+| **Авторизація** (Auth) | пускає в адмінку лише твою команду | замок на дверях адмінки |
+
+Потік даних: **клієнт записує голосову → функція `save` кладе її у Storage і пише рядок у базу → функція `transcribe` автоматично перетворює аудіо на текст (Whisper) → ти в адмінці бачиш картку брифу й тиснеш «Передати дані»**.
+
+---
+
+## Крок 0. Що тобі знадобиться (зберись заздалегідь)
+
+- ✅ Акаунт Supabase і створений проєкт — **ти вже це зробив** (URL `rngahwncqtdnckqeqhnd`).
+- ✅ `url` + `anonKey` вставлені в `app/supabase.js` — **вже зроблено**.
+- 🔑 **Токен Telegram-бота** @gelato_design_bot — візьмеш у @BotFather (нижче покажу).
+- 🔑 **Ключ OpenAI** (для транскрипції) — з platform.openai.com (потрібна картка, але коштує копійки).
+- 📧 Твій робочий email (для входу в адмінку).
+
+> Далі «дашборд» = сайт [supabase.com/dashboard](https://supabase.com/dashboard) → твій проєкт. Зліва є меню — саме його пункти я називатиму жирним.
+
+---
+
+## Крок 1. Створити таблиці в базі
+
+**Навіщо:** це створює структуру, куди лягатимуть брифи (таблиці `briefs`, `answers`, `voices`, `links`, `admins`) і правила безпеки.
+
+1. У дашборді зліва відкрий **SQL Editor**.
+2. Натисни **+ New query**.
+3. Відкрий файл [`supabase/schema.sql`](schema.sql) у себе в редакторі коду, **скопіюй увесь його вміст** і встав у вікно SQL Editor.
+4. Натисни **Run** (або Cmd/Ctrl+Enter).
+5. Унизу має зʼявитися зелене **Success. No rows returned**. ✅
+
+> Якщо побачиш помилку на рядку зі `storage.objects` — нічого страшного, це означає, що бакет ще не створено. Спочатку зроби **Крок 2**, потім ще раз запусти лише останній блок SQL (рядок із `create policy "admin read voice objects" ...`).
+
+---
+
+## Крок 2. Створити сховище для аудіо
+
+**Навіщо:** сюди фізично лягатимуть голосові файли. Приватне — щоб ніхто сторонній не скачав.
+
+1. Зліва → **Storage**.
+2. **New bucket**.
+3. Name: впиши рівно `voices` (маленькими літерами).
+4. **Public bucket** — лиши **ВИМКНЕНО** (бакет має бути Private).
+5. **Save**.
+
+---
+
+## Крок 3. Додати себе в адміни
+
+**Навіщо:** адмінку зможе відкрити лише той, чий email є в таблиці `admins`.
+
+1. Зліва → **SQL Editor** → **+ New query**.
+2. Встав (заміни на свою пошту, якою заходитимеш в адмінку):
    ```sql
-   insert into admins (email) values ('you@example.com');
+   insert into admins (email) values ('rozhensky@gmail.com');
    ```
+3. **Run** → **Success**. ✅
 
-## 3. Сховище аудіо
-6. **Storage → New bucket** → назва `voices`, **Private**. (Політику доступу вже створив `schema.sql`.)
+---
 
-## 4. Edge Functions
-Постав [Supabase CLI](https://supabase.com/docs/guides/cli) і з кореня репо:
-```bash
-supabase login
-supabase link --project-ref <your-ref>
+## Крок 4. Завантажити дві функції (через браузер, без CLI)
 
-# секрети (новий бот-токен після ротації + ключ OpenAI + секрет вебхука)
-supabase secrets set TELEGRAM_BOT_TOKEN=xxxxx
-supabase secrets set OPENAI_API_KEY=sk-xxxxx
-supabase secrets set WEBHOOK_SECRET=$(openssl rand -hex 16)   # запам'ятай значення
+**Навіщо:** `save` приймає дані від міні-апу, `transcribe` робить транскрипцію. Це найважливіший крок — роби уважно.
 
-supabase functions deploy save
-supabase functions deploy transcribe --no-verify-jwt
-```
-`SUPABASE_URL` і `SUPABASE_SERVICE_ROLE_KEY` Supabase підставляє у функції автоматично.
+### 4.1. Функція `save`
+1. Зліва → **Edge Functions**.
+2. **Deploy a new function** → обери **Via Editor** (редактор у браузері).
+3. Name функції: рівно `save`.
+4. У вікні редактора **видали приклад-код** і встав **увесь вміст** файлу [`supabase/functions/save/index.ts`](functions/save/index.ts).
+5. **ВАЖЛИВО:** знайди перемикач **«Verify JWT»** (або «Enforce JWT verification») і **ВИМКНИ його**.
+   *Чому: наш новий ключ `sb_publishable_…` — не JWT, тому стандартну перевірку треба вимкнути. Безпеку забезпечує сама функція — вона перевіряє Telegram-підпис (`initData`).*
+6. **Deploy**. Зачекай «Deployed». ✅
 
-## 5. Авто-транскрипція (вебхук на нові голосові)
-7. **Database → Webhooks → Create**:
-   - Table: `public.voices`, Event: **Insert**
-   - Type: **HTTP Request**, Method `POST`
-   - URL: `https://<your-ref>.functions.supabase.co/transcribe`
-   - HTTP Header: `x-webhook-secret: <те саме значення WEBHOOK_SECRET>`
+### 4.2. Функція `transcribe`
+1. Знову **Edge Functions** → **Deploy a new function** → **Via Editor**.
+2. Name: рівно `transcribe`.
+3. Встав увесь вміст файлу [`supabase/functions/transcribe/index.ts`](functions/transcribe/index.ts).
+4. Так само **ВИМКНИ «Verify JWT»**.
+5. **Deploy**. ✅
 
-## 6. Авторизація адмінки
-8. **Authentication → Providers → Email**: увімкни, лиши **Magic Link**.
-9. **Authentication → URL Configuration**: додай у *Redirect URLs* адресу адмінки — `https://gelato.design/admin/` (і `http://localhost:8000/admin/` для локального тесту).
+> **Альтернатива через термінал (CLI)** — якщо зручніше:
+> ```bash
+> npm i -g supabase            # або: brew install supabase/tap/supabase
+> supabase login
+> supabase link --project-ref rngahwncqtdnckqeqhnd
+> supabase functions deploy save --no-verify-jwt
+> supabase functions deploy transcribe --no-verify-jwt
+> ```
 
-## Готово
-- Міні-ап `gelato.design/app/` тепер пише голосові/посилання у твій Supabase (на рівні Telegram-акаунту).
-- Адмінка `gelato.design/admin/` — вхід за magic-link, список брифів, картка з аудіо+транскриптами, кнопка **«Передати дані»** → ZIP для Claude Code.
+---
 
-> Поки `app/supabase.js` порожній — міні-ап працює локально (IndexedDB), нічого не ламається.
+## Крок 5. Додати «секрети» (паролі для функцій)
+
+**Навіщо:** функціям треба бот-токен (щоб перевіряти підпис), ключ OpenAI (для Whisper) і секрет вебхука (щоб транскрипцію не міг смикнути сторонній). Ці значення **секретні** — вони живуть лише тут, ніколи в коді.
+
+1. Зліва → **Edge Functions** → вкладка **Secrets** (інколи називається **Manage secrets** або **Project Settings → Edge Functions → Secrets**).
+2. Додай **три** секрети (кнопка **Add new secret** для кожного):
+
+   | Name (точно так) | Value (що вставити) |
+   |---|---|
+   | `TELEGRAM_BOT_TOKEN` | токен бота — див. нижче «Звідки взяти» |
+   | `OPENAI_API_KEY` | ключ OpenAI — див. нижче |
+   | `WEBHOOK_SECRET` | будь-який довгий випадковий рядок, напр. `gelato_8f3a9c2b1d7e` (придумай свій і **запамʼятай** — знадобиться в Кроці 6) |
+
+3. **Save**.
+
+> `SUPABASE_URL` і `SUPABASE_SERVICE_ROLE_KEY` додавати **НЕ треба** — Supabase підставляє їх у функції сам.
+
+### Звідки взяти значення
+- **TELEGRAM_BOT_TOKEN:** Telegram → @BotFather → `/mybots` → обери @gelato_design_bot → **API Token**. (Старий токен раніше світився в чаті — краще `/revoke` або **/token** → отримати новий і вставити саме новий.)
+- **OPENAI_API_KEY:** [platform.openai.com](https://platform.openai.com) → іконка профілю → **API keys** → **Create new secret key** → скопіюй (показується один раз!). Поповни баланс на $5 у **Billing** — цього вистачить надовго (≈ $0.006 за хвилину аудіо).
+
+---
+
+## Крок 6. Увімкнути авто-транскрипцію (вебхук)
+
+**Навіщо:** щойно у базі зʼявляється нова голосова — Supabase сам «штовхає» функцію `transcribe`, і та робить текст.
+
+1. Зліва → **Database** → **Webhooks** → **Create a new hook** (інколи **Database → Webhooks → Enable webhooks** спершу).
+2. Name: `transcribe-voice` (будь-яка).
+3. Table: обери `voices` (schema `public`).
+4. Events: постав галочку лише **Insert**.
+5. Type: **HTTP Request**, Method: **POST**.
+6. URL: встав рівно:
+   ```
+   https://rngahwncqtdnckqeqhnd.supabase.co/functions/v1/transcribe
+   ```
+7. **HTTP Headers** → Add header:
+   - Name: `x-webhook-secret`
+   - Value: **те саме значення**, що ти вписав у `WEBHOOK_SECRET` у Кроці 5.
+8. **Create / Save**. ✅
+
+---
+
+## Крок 7. Налаштувати вхід в адмінку
+
+**Навіщо:** адмінка пускає за «magic-link» — клікаєш посилання з пошти й заходиш, без пароля.
+
+1. Зліва → **Authentication** → **Providers** → **Email**: переконайся, що **увімкнено** (за замовчуванням так). Можна вимкнути «Confirm email», лишити magic link.
+2. Зліва → **Authentication** → **URL Configuration**:
+   - **Site URL:** `https://gelato.design`
+   - **Redirect URLs** → Add URL: додай обидва:
+     - `https://gelato.design/admin/`
+     - `http://localhost:8000/admin/`  *(для локального тесту)*
+3. **Save**.
+
+---
+
+## Крок 8. Перевірити, що все працює
+
+1. Відкрий бота @gelato_design_bot у Telegram → кнопкою меню запусти міні-ап (або `gelato.design/app/` на телефоні).
+2. Пройди 1–2 питання: запиши голосову, додай посилання.
+3. У дашборді → **Table Editor** → таблиця `voices`: має зʼявитися рядок. Через ~10–30 сек у колонці `transcript` зʼявиться текст. ✅
+   *(Якщо текст не зʼявився — див. «Якщо щось не працює» нижче.)*
+4. Відкрий `gelato.design/admin/` → введи свій email → перейди за посиланням із пошти → побачиш список брифів → відкрий картку → послухай аудіо, прочитай транскрипт → натисни **«Передати дані»** → завантажиться ZIP.
+5. Розпакуй ZIP, відкрий у цій папці Claude Code і скажи: «сплануй продукт за цим брифом».
+
+---
+
+## Якщо щось не працює
+
+- **У `voices` зʼявляється рядок, але `transcript` порожній** → проблема у транскрипції. Дашборд → **Edge Functions → transcribe → Logs**. Найчастіше: не доданий `OPENAI_API_KEY` / порожній баланс OpenAI / у вебхуку (Крок 6) не збігається `x-webhook-secret`.
+- **Голосові взагалі не доходять у `voices`** → **Edge Functions → save → Logs**. Найчастіше: не вимкнено «Verify JWT» (Крок 4.5), або неправильний `TELEGRAM_BOT_TOKEN`, або міні-ап відкрито в звичайному браузері, а не в Telegram (поза Telegram синхронізація вимкнена — це нормально).
+- **В адмінку не пускає («немає доступу»)** → не додав свій email у таблицю `admins` (Крок 3) тією самою поштою, якою заходиш.
+- **Лист для входу не приходить** → перевір «спам»; переконайся, що адресу адмінки додано в **Redirect URLs** (Крок 7).
+- **Аудіо в адмінці не грає / «Передати дані» без файлів** → бакет `voices` має бути створений (Крок 2) і політику зі `schema.sql` застосовано (Крок 1).
+
+---
+
+## Скільки це коштує
+- **Supabase** — безкоштовний тариф (500 МБ база, 1 ГБ файлів, достатньо на десятки-сотні брифів).
+- **OpenAI Whisper** — ≈ $0.006 за хвилину аудіо. Бриф на 15 хв ≈ **$0.09**. $5 балансу вистачить надовго.
+
+## Безпека (коротко)
+- У браузер потрапляє лише `url` + публічний `sb_publishable_…` ключ — це безпечно (доступ обмежує RLS).
+- Бот-токен, ключ OpenAI, секрет вебхука — **лише** в секретах функцій (Крок 5), ніколи в коді.
+- Поки `app/supabase.js` був порожній — міні-ап працював локально; тепер, із заповненими ключами, він синхронізується з твоїм Supabase.
