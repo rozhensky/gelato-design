@@ -86,5 +86,13 @@ input[type=email]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rg
 
 .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--dark); color: #fff; font-size: 13px; padding: 10px 16px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 100; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.overlay { position: fixed; inset: 0; z-index: 200; background: rgba(35,32,29,0.45); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.dialog { background: #fff; border-radius: 20px; padding: 24px; max-width: 380px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.dlg-title { font-size: 19px; font-weight: 600; color: var(--t900); letter-spacing: -0.01em; }
+.dlg-text { font-size: 14px; line-height: 1.5; color: var(--t500); margin: 10px 0 0; }
+.dlg-actions { display: flex; gap: 10px; margin-top: 22px; }
+.dlg-actions .btn { flex: 1; }
+.btn.danger-solid { background: var(--danger); color: #fff; box-shadow: 0 8px 22px rgba(220,38,38,0.26); }
+.btn.danger-solid:active { background: #b91c1c; }
 .spin { animation: spin 0.9s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }

@@ -19,6 +19,17 @@
 
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]; }); }
   function toastMsg(m) { var t = document.getElementById("toast"); t.textContent = m; t.classList.add("show"); setTimeout(function () { t.classList.remove("show"); }, 2200); }
+  function confirmDialog(title, text, okLabel, onOk) {
+    var ov = document.createElement("div");
+    ov.className = "overlay";
+    ov.innerHTML = '<div class="dialog"><div class="dlg-title">' + esc(title) + '</div><p class="dlg-text">' + esc(text) + '</p>' +
+      '<div class="dlg-actions"><button class="btn btn-ghost" id="dlgCancel">Скасувати</button><button class="btn danger-solid" id="dlgOk">' + esc(okLabel) + '</button></div></div>';
+    document.body.appendChild(ov);
+    function close() { ov.remove(); }
+    document.getElementById("dlgCancel").onclick = close;
+    ov.addEventListener("click", function (e) { if (e.target === ov) close(); });
+    document.getElementById("dlgOk").onclick = function () { close(); onOk(); };
+  }
   function fmtDate(s) { try { var d = new Date(s); return d.toLocaleDateString("uk-UA") + " " + d.toLocaleTimeString("uk-UA", { hour: "2-digit", minute: "2-digit" }); } catch (e) { return s || ""; } }
   function initials(name, acc) { var n = (name || "").trim(); if (n) return n.split(/\s+/).map(function (x) { return x[0]; }).slice(0, 2).join("").toUpperCase(); return (acc || "?").replace("tg_", "").slice(0, 2); }
   function topBar(email) {
@@ -183,15 +194,16 @@
 
     document.getElementById("back").onclick = function () { renderList(); };
     document.getElementById("export").onclick = function () { exportBrief(); };
-    document.getElementById("del").onclick = async function () {
-      if (!confirm("Видалити цей бриф? Усі відповіді й аудіо зникнуть. Дію не можна скасувати.")) return;
-      var paths = (current && current.voices ? current.voices : []).map(function (v) { return v.storage_path; }).filter(Boolean);
-      if (paths.length) { try { await sb.storage.from("voices").remove(paths); } catch (e) {} }
-      var r = await sb.from("briefs").delete().eq("id", brief.id).select();
-      if (r.error) { toastMsg("Помилка: " + r.error.message); return; }
-      if (!r.data || !r.data.length) { toastMsg("Не вдалося видалити — застосуйте RLS-політику на delete у Supabase"); return; }
-      toastMsg("Бриф видалено");
-      renderList();
+    document.getElementById("del").onclick = function () {
+      confirmDialog("Видалити бриф?", "Ви справді хочете видалити цей бриф? Усі відповіді й аудіо зникнуть назавжди.", "Видалити", async function () {
+        var paths = (current && current.voices ? current.voices : []).map(function (v) { return v.storage_path; }).filter(Boolean);
+        if (paths.length) { try { await sb.storage.from("voices").remove(paths); } catch (e) {} }
+        var r = await sb.from("briefs").delete().eq("id", brief.id).select();
+        if (r.error) { toastMsg("Помилка: " + r.error.message); return; }
+        if (!r.data || !r.data.length) { toastMsg("Не вдалося видалити — застосуйте RLS-політику на delete у Supabase"); return; }
+        toastMsg("Бриф видалено");
+        renderList();
+      });
     };
     bindLogout();
   }
