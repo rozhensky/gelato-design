@@ -169,6 +169,23 @@
 
 ---
 
+## Крок 9. Привітання при старті бота (/start)
+
+**Навіщо:** коли людина відкриває бота й тисне **Start**, бот одразу вітає її й показує кнопку «Відкрити бриф».
+
+1. **Edge Functions → Deploy a new function → Via Editor**, name рівно `bot`, встав увесь вміст [`supabase/functions/bot/index.ts`](functions/bot/index.ts), **ВИМКНИ «Verify JWT»**, **Deploy**.
+2. *(Рекомендовано)* додай ще один секрет (Крок 5, вкладка **Secrets**): `TELEGRAM_WEBHOOK_SECRET` = будь-який випадковий рядок, напр. `gelato_hook_5b2e8a`. Запамʼятай його.
+3. **Підключи бота до функції** — виконай один раз у терміналі (встав свій бот-токен; якщо НЕ додавав секрет у п.2 — прибери хвіст `&secret_token=...`):
+   ```bash
+   curl "https://api.telegram.org/bot<ТВІЙ_БОТ_ТОКЕН>/setWebhook?url=https://rngahwncqtdnckqeqhnd.supabase.co/functions/v1/bot&secret_token=<TELEGRAM_WEBHOOK_SECRET>"
+   ```
+   Має прийти `{"ok":true,"result":true,...}`. ✅
+4. Перевір: напиши боту `/start` — прийде привітання з кнопкою **«Відкрити бриф»**.
+
+> Вебхук не конфліктує з Mini App і з функцією `save` — це різні механізми. Якщо колись захочеш вимкнути привітання: `…/deleteWebhook`.
+
+---
+
 ## Якщо щось не працює
 
 - **У `voices` зʼявляється рядок, але `transcript` порожній** → проблема у транскрипції. Дашборд → **Edge Functions → transcribe → Logs**. Найчастіше: не доданий `OPENAI_API_KEY` / порожній баланс OpenAI / у вебхуку (Крок 6) не збігається `x-webhook-secret`.
