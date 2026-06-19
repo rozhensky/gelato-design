@@ -497,6 +497,7 @@
 
         setBar(
             '<button class="btn btn-ghost narrow" id="prevBtn"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>' +
+            '<button class="btn btn-ghost narrow" id="goReview"><iconify-icon icon="solar:checklist-minimalistic-linear"></iconify-icon> Огляд</button>' +
             '<button class="btn btn-primary" id="nextBtn">' + (last ? 'До огляду' : 'Далі') + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
         );
 
@@ -522,6 +523,7 @@
             inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
         }
         $('#prevBtn').onclick = function () { goTo(idx === 0 ? -1 : idx - 1); };
+        $('#goReview').onclick = function () { goTo(10); };
         $('#nextBtn').onclick = function () { goTo(idx + 1 > 9 ? 10 : idx + 1); };
     }
 
