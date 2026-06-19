@@ -82,3 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     show(0);
 })();
+
+// ===== Founder-story video modal (YouTube) =====
+(function () {
+    const modal = document.getElementById('vidModal');
+    if (!modal) return;
+    const frame = document.getElementById('vidFrame');
+    const open = id => { frame.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0'; modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden'; };
+    const close = () => { frame.src = ''; modal.classList.add('hidden'); modal.classList.remove('flex'); document.body.style.overflow = ''; };
+    document.querySelectorAll('.vid-card').forEach(c => c.addEventListener('click', () => open(c.dataset.yt)));
+    const btn = document.getElementById('vidClose'); if (btn) btn.addEventListener('click', close);
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) close(); });
+})();
