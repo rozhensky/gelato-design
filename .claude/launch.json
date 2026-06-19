@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Static site (python http.server)",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-I", "-c", "import functools,http.server,socketserver; h=functools.partial(http.server.SimpleHTTPRequestHandler, directory='/Users/rozhensky/Documents/letthemcook'); socketserver.TCPServer(('', 8000), h).serve_forever()"],
+      "port": 8000
+    }
+  ]
+}

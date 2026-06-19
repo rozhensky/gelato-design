@@ -1,0 +1,18 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Dependencies / build (if a tooling step is added later)
+node_modules/
+dist/
+.cache/
+
+# Env / secrets
+.env
+.env.local
+
+# Local Claude Code settings (personal permissions, machine paths)
+.claude/settings.local.json
