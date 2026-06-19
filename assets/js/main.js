@@ -57,65 +57,28 @@ document.addEventListener('DOMContentLoaded', () => {
     gsap.to('.gsap-float > div', { y: -8, duration: 4, repeat: -1, yoyo: true, ease: 'sine.inOut', stagger: { each: 1, from: 'start' } });
 });
 
-// ===== Voice → Product hero demo =====
+// ===== Hero stages slider =====
 (function () {
-    const stage = document.getElementById('voiceDemo');
-    if (!stage) return;
-    const mic = document.getElementById('vdMic');
-    const timerEl = stage.querySelector('.vd-timer');
-    const proc = stage.querySelector('.vd-proc');
-    const voice = stage.querySelector('.vd-voice');
-    const app = stage.querySelector('.vd-app');
-    const replay = document.getElementById('vdReplay');
-    let state = 'idle', t0, raf, recTimeout;
+    const root = document.getElementById('stageSlider');
+    if (!root) return;
+    const slides = [...root.querySelectorAll('.gs-slide')];
+    const dots = [...root.querySelectorAll('.gs-dot')];
+    const curEl = root.querySelector('.gs-cur');
+    const prev = root.querySelector('.gs-prev');
+    const next = root.querySelector('.gs-next');
+    let i = 0;
 
-    function fmt(ms) { const s = Math.floor(ms / 1000); return '0:' + String(s).padStart(2, '0'); }
-    function tick() { timerEl.textContent = fmt(Date.now() - t0); raf = requestAnimationFrame(tick); }
-
-    function startRec() {
-        state = 'recording'; stage.classList.add('is-recording');
-        t0 = Date.now(); timerEl.textContent = '0:00'; tick();
-        // auto-stop after ~3.2s so the demo always completes
-        recTimeout = setTimeout(stopRec, 3200);
-    }
-    function stopRec() {
-        if (state !== 'recording') return;
-        clearTimeout(recTimeout); cancelAnimationFrame(raf);
-        state = 'processing'; stage.classList.remove('is-recording');
-        voice.classList.add('hidden'); proc.classList.remove('hidden');
-        setTimeout(() => {
-            proc.classList.add('hidden'); app.classList.remove('hidden');
-            requestAnimationFrame(() => stage.classList.add('is-app'));
-            replay.classList.remove('hidden'); replay.classList.add('flex');
-            state = 'app';
-        }, 1400);
-    }
-    function reset() {
-        state = 'idle'; stage.classList.remove('is-app');
-        app.classList.add('hidden'); proc.classList.add('hidden');
-        voice.classList.remove('hidden');
-        replay.classList.add('hidden'); replay.classList.remove('flex');
+    function show(n) {
+        i = (n + slides.length) % slides.length;
+        slides.forEach((s, k) => s.classList.toggle('is-active', k === i));
+        dots.forEach((d, k) => d.classList.toggle('is-active', k === i));
+        if (curEl) curEl.textContent = String(i + 1).padStart(2, '0');
     }
 
-    mic.addEventListener('click', () => { if (state === 'idle') startRec(); else if (state === 'recording') stopRec(); });
-    replay.addEventListener('click', reset);
+    // manual navigation only — no auto-advance
+    prev.addEventListener('click', () => show(i - 1));
+    next.addEventListener('click', () => show(i + 1));
+    dots.forEach((d, k) => d.addEventListener('click', () => show(k)));
 
-    // working mini-app interactions
-    const tasks = [...app.querySelectorAll('.vd-task')];
-    const bar = app.querySelector('.vd-bar');
-    const count = app.querySelector('.vd-count');
-    function refresh() {
-        const d = tasks.filter(t => t.classList.contains('vd-done')).length;
-        const pct = Math.round(d / tasks.length * 100);
-        bar.style.width = pct + '%';
-        if (count) count.textContent = pct + '%';
-    }
-    tasks.forEach(t => t.addEventListener('click', () => { t.classList.toggle('vd-done'); refresh(); }));
-    refresh();
-    // bottom tabs
-    const tabs = [...app.querySelectorAll('.vd-tab')];
-    tabs.forEach(tab => tab.addEventListener('click', () => { tabs.forEach(x => x.classList.remove('is-on')); tab.classList.add('is-on'); }));
-    // add button
-    const cta = app.querySelector('.vd-cta');
-    cta.addEventListener('click', () => { cta.classList.add('is-tapped'); const o = cta.textContent; cta.textContent = '✓ Додано'; setTimeout(() => { cta.classList.remove('is-tapped'); cta.textContent = o; }, 1400); });
+    show(0);
 })();

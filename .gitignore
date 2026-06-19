@@ -16,3 +16,6 @@ dist/
 
 # Local Claude Code settings (personal permissions, machine paths)
 .claude/settings.local.json
+
+# Founder original photo — keep private, site uses founder-portrait.png
+assets/img/founder.png

@@ -26,58 +26,34 @@ iconify-icon { --iconify-stroke-width: 1.5; }
         transparent 16px);
 }
 
-/* ===================== voice → product demo ===================== */
-.vd-wave { display: none; }
-.vd-stage.is-recording .vd-wave { display: flex; }
-.vd-stage.is-recording .vd-timer { display: block; }
-.vd-stage.is-recording .vd-hint { visibility: hidden; }
-.vd-stage.is-recording .vd-ic-mic { display: none; }
-.vd-stage.is-recording .vd-ic-stop { display: inline-block; }
+/* ===================== stages slider (hero) ===================== */
+.gs-slide { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s cubic-bezier(.5, 1, .5, 1); pointer-events: none; }
+.gs-slide.is-active { opacity: 1; transform: none; pointer-events: auto; }
 
-.vd-mic { transition: transform .2s ease; }
-.vd-stage.is-recording .vd-mic { transform: scale(1.06); }
-
-.vd-pulse { position: absolute; inset: 0; border-radius: 9999px; background: rgba(230, 92, 0, .35); opacity: 0; }
-.vd-stage.is-recording .vd-pulse { animation: vdPulse 1.5s ease-out infinite; }
-@keyframes vdPulse { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(1.9); opacity: 0; } }
-
-.vd-wave i { width: 3px; height: 10px; border-radius: 9999px; background: #E65C00; display: block; animation: vdBar .9s ease-in-out infinite; }
-.vd-wave i:nth-child(2n) { background: #FF8C40; }
-.vd-wave i:nth-child(1) { animation-delay: 0s; }
-.vd-wave i:nth-child(2) { animation-delay: .08s; }
-.vd-wave i:nth-child(3) { animation-delay: .16s; }
-.vd-wave i:nth-child(4) { animation-delay: .24s; }
-.vd-wave i:nth-child(5) { animation-delay: .32s; }
-.vd-wave i:nth-child(6) { animation-delay: .4s; }
-.vd-wave i:nth-child(7) { animation-delay: .48s; }
-.vd-wave i:nth-child(8) { animation-delay: .56s; }
-.vd-wave i:nth-child(9) { animation-delay: .64s; }
-.vd-wave i:nth-child(10) { animation-delay: .5s; }
-.vd-wave i:nth-child(11) { animation-delay: .42s; }
-.vd-wave i:nth-child(12) { animation-delay: .34s; }
-.vd-wave i:nth-child(13) { animation-delay: .26s; }
-.vd-wave i:nth-child(14) { animation-delay: .18s; }
-.vd-wave i:nth-child(15) { animation-delay: .1s; }
-.vd-wave i:nth-child(16) { animation-delay: .05s; }
-.vd-wave i:nth-child(17) { animation-delay: .2s; }
-@keyframes vdBar { 0%, 100% { height: 8px; } 50% { height: 30px; } }
-
-.vd-spin { animation: vdSpin .8s linear infinite; }
-@keyframes vdSpin { to { transform: rotate(360deg); } }
-
-.vd-app .vd-phone { opacity: 0; transform: translateY(14px) scale(.96); transition: opacity .5s ease, transform .5s cubic-bezier(.5, 1, .5, 1); }
-.vd-stage.is-app .vd-app .vd-phone { opacity: 1; transform: none; }
-
-.vd-task.vd-done .vd-check { background: #E65C00; border-color: #E65C00; color: #fff; }
-.vd-task .vd-check iconify-icon { opacity: 0; transition: .15s; }
-.vd-task.vd-done .vd-check iconify-icon { opacity: 1; }
-.vd-task.vd-done .vd-tasklabel { color: #A8A59C; text-decoration: line-through; }
-
-.vd-tab.is-on { color: #E65C00; }
-.vd-cta.is-tapped { background: #34D399 !important; }
+.gs-dot { width: 7px; height: 7px; border-radius: 9999px; background: #E0CDBB; transition: width .3s ease, background .3s ease; cursor: pointer; }
+.gs-dot.is-active { width: 22px; background: #E65C00; }
 
 @media (prefers-reduced-motion: reduce) {
-    .vd-pulse, .vd-wave i, .vd-spin { animation: none !important; }
+    .gs-slide { transition: none; }
     .reveal-word { transform: none !important; }
     * { scroll-behavior: auto !important; }
 }
+
+/* ===================== MVP term tooltip ===================== */
+.mvp { border-bottom: 1px dashed #E65C00; cursor: help; position: relative; white-space: nowrap; }
+.mvp::after {
+    content: "MVP — це перша версія продукту з базовим набором функцій. Уже нею можна реально користуватися й отримати від продукту головну цінність — те, заради чого він і потрібен.";
+    position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%) translateY(4px);
+    width: 250px; max-width: 72vw;
+    background: #23201D; color: #FDFBF7;
+    font-size: 12px; font-weight: 400; line-height: 1.45; letter-spacing: 0; text-transform: none; text-align: left;
+    padding: 10px 12px; border-radius: 10px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+    opacity: 0; visibility: hidden; transition: opacity .18s ease, transform .18s ease; pointer-events: none; z-index: 50;
+}
+.mvp::before {
+    content: ""; position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%);
+    border: 6px solid transparent; border-top-color: #23201D;
+    opacity: 0; visibility: hidden; transition: opacity .18s ease; z-index: 50;
+}
+.mvp:hover::after, .mvp:focus::after { opacity: 1; visibility: visible; transform: translateX(-50%); }
+.mvp:hover::before, .mvp:focus::before { opacity: 1; visibility: visible; }
