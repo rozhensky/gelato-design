@@ -225,6 +225,13 @@ h2.qtitle { font-size: 23px; line-height: 1.14; letter-spacing: -0.02em; color: 
 .done-ic { width: 76px; height: 76px; border-radius: 9999px; margin: 0 auto 20px; background: linear-gradient(135deg, var(--grad-a), var(--grad-b)); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 14px 32px rgba(230,92,0,0.32); }
 .done-ic iconify-icon { font-size: 38px; }
 
+/* submitted confirmation banner (review screen) */
+.done-banner { display: flex; gap: 13px; align-items: flex-start; background: linear-gradient(to bottom, #F0FDF4, #DCFCE7); border: 1px solid #BBF7D0; border-radius: 18px; padding: 16px 16px 18px; }
+.db-ic { width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0; background: #16A34A; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
+.db-ic iconify-icon { font-size: 22px; }
+.db-title { font-size: 17px; font-weight: 600; color: #15803D; letter-spacing: -0.01em; }
+.db-text { font-size: 13.5px; line-height: 1.5; color: #3F6B52; margin: 4px 0 0; }
+
 /* ---------- fixed action bar ---------- */
 .actionbar {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;

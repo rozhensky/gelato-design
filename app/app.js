@@ -595,12 +595,7 @@
         var done = answeredCount();
         var total = QUESTIONS.length;
         var all = done === total;
-        var sAt = submittedAt(), dirty = changedAt() > sAt;
-        var helpTxt = !all
-            ? ('Заповнено ' + done + ' із ' + total + '. Надіслати можна, коли заповните всі питання.')
-            : (!sAt ? 'Усе заповнено — можна надсилати бриф.'
-                    : (dirty ? 'Є зміни після надсилання — можна надіслати оновлення.'
-                             : 'Бриф надіслано ✅. Можете доповнити будь-яке питання.'));
+        var sAt = submittedAt();
         var items = QUESTIONS.map(function (q, i) {
             var qid = 'q' + q.n, a = ansFor(qid), ok = isAnswered(qid);
             var bits = [];
@@ -614,24 +609,23 @@
             '</button>';
         }).join('');
 
-        app.innerHTML =
-            topChrome('Огляд · ' + done + '/' + QUESTIONS.length) +
-            '<div class="card">' +
-                '<div class="eyebrow">' + (sAt && !dirty ? 'Готово' : 'Майже готово') + '</div>' +
-                '<h2 class="qtitle">Перегляньте бриф</h2>' +
-                '<p class="help">' + helpTxt + '</p>' +
-                '<div class="rev-list">' + items + '</div>' +
-            '</div>';
+        var headHtml = sAt
+            ? ('<div class="done-banner">' +
+                   '<div class="db-ic"><iconify-icon icon="mdi:check-bold"></iconify-icon></div>' +
+                   '<div class="db-body"><div class="db-title">Бриф надіслано</div>' +
+                   '<p class="db-text">Дякуємо! Будь-які зміни, які ви додаєте далі — нові голосові чи посилання — ми отримуємо автоматично. Повторно надсилати нічого не потрібно.</p></div>' +
+               '</div>')
+            : ('<div class="eyebrow">' + (all ? 'Майже готово' : 'Огляд') + '</div>' +
+               '<h2 class="qtitle">Перегляньте бриф</h2>' +
+               '<p class="help">' + (all ? 'Усе заповнено — можна надсилати бриф.' : ('Заповнено ' + done + ' із ' + total + '. Надіслати можна, коли заповните всі питання.')) + '</p>');
 
-        var barHtml = '';
-        if (all && (!sAt || dirty)) {
-            barHtml = '<button class="btn btn-primary" id="submitBtn">' + (sAt ? 'Надіслати оновлення' : 'Надіслати бриф') + ' <iconify-icon icon="' + (sAt ? 'solar:refresh-linear' : 'solar:plain-2-bold') + '"></iconify-icon></button>';
-        }
-        setBar(barHtml);
-        document.querySelectorAll('[data-go]').forEach(function (it) {
-            it.onclick = function () { goTo(parseInt(it.getAttribute('data-go'), 10)); };
-        });
-        var sbtn = document.getElementById('submitBtn'); if (sbtn) sbtn.onclick = function () { submitBrief(!!sAt); };
+        app.innerHTML =
+            topChrome('Огляд · ' + done + '/' + total) +
+            '<div class="card">' + headHtml + '<div class="rev-list">' + items + '</div></div>';
+
+        setBar((all && !sAt) ? '<button class="btn btn-primary" id="submitBtn">Надіслати бриф <iconify-icon icon="solar:plain-2-bold"></iconify-icon></button>' : '');
+        document.querySelectorAll('[data-go]').forEach(function (it) { it.onclick = function () { goTo(parseInt(it.getAttribute('data-go'), 10)); }; });
+        var sbtn = document.getElementById('submitBtn'); if (sbtn) sbtn.onclick = function () { submitBrief(); };
     }
 
     function renderDone() {
@@ -639,7 +633,7 @@
             '<div class="card"><div class="done-wrap">' +
                 '<div class="done-ic"><iconify-icon icon="solar:check-read-linear"></iconify-icon></div>' +
                 '<h2 class="qtitle" style="margin-top:0">Бриф надіслано</h2>' +
-                '<p class="help" style="margin-left:auto;margin-right:auto;max-width:34ch">Дякуємо! Ми вивчимо матеріали й підготуємось до стратегічної сесії. Відповіді лишаються у вас — можна повернутись і доповнити.</p>' +
+                '<p class="help" style="margin-left:auto;margin-right:auto;max-width:34ch">Дякуємо за підтвердження! Ми вивчимо матеріали й підготуємось до стратегічної сесії. Будь-які зміни, які ви додасте далі, ми отримаємо автоматично — повторно надсилати не потрібно.</p>' +
             '</div></div>';
         setBar('<button class="btn btn-ghost" id="reopen">Відкрити бриф знову</button>');
         $('#reopen').onclick = function () { goTo(10); };
@@ -650,12 +644,11 @@
        (validate Telegram initData, upload audio to storage, notify
        team). The collected payload is assembled here for that swap.
        ============================================================ */
-    function submitBrief(isUpdate) {
+    function submitBrief() {
         markSubmitted();
-        if (Sync.enabled) Sync.submit(isUpdate).catch(function () {});
+        if (Sync.enabled) Sync.submit().catch(function () {});
         haptic('ok');
-        if (isUpdate) { toast('Оновлення надіслано'); render(); }
-        else { goTo(11); }
+        goTo(11);
     }
 
     /* ============================================================
