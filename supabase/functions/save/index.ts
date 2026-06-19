@@ -60,6 +60,32 @@ Deno.serve(async (req) => {
     const accountId = "tg_" + u.id;
     const db = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
 
+    // read-only: load this account's brief (no upsert — must not create empty briefs)
+    if (body.action === "getBrief") {
+      const { data: gbrief } = await db.from("briefs").select("*").eq("account_id", accountId).maybeSingle();
+      if (!gbrief) return json({ exists: false });
+      const [aRes, vRes, lRes] = await Promise.all([
+        db.from("answers").select("id,q_num").eq("brief_id", gbrief.id),
+        db.from("voices").select("*").eq("brief_id", gbrief.id).order("created_at"),
+        db.from("links").select("*").eq("brief_id", gbrief.id).order("created_at"),
+      ]);
+      const qByAns: Record<string, number> = {};
+      (aRes.data || []).forEach((a: { id: string; q_num: number }) => { qByAns[a.id] = a.q_num; });
+      const voices = [];
+      for (const v of (vRes.data || [])) {
+        const { data: signed } = await db.storage.from(BUCKET).createSignedUrl(v.storage_path, 3600);
+        voices.push({ id: v.id, q: qByAns[v.answer_id], dur: v.duration, mime: v.mime, transcript: v.transcript, url: signed?.signedUrl || null });
+      }
+      const links = (lRes.data || []).map((l: { id: string; answer_id: string; url: string; kind: string }) => ({ id: l.id, q: qByAns[l.answer_id], url: l.url, kind: l.kind }));
+      return json({
+        exists: true,
+        status: gbrief.status,
+        contact: { name: gbrief.contact_name, email: gbrief.email, phone: gbrief.phone, socials: gbrief.socials },
+        voices,
+        links,
+      });
+    }
+
     // ensure brief exists / refresh tg info
     const { data: brief, error: be } = await db
       .from("briefs")

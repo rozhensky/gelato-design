@@ -36,14 +36,13 @@
     }
     var tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
     var ACCOUNT_ID = tgUser ? ('tg_' + tgUser.id) : 'local';
-    var CONTACTS_KEY = 'gelato_contacts_' + ACCOUNT_ID;
-    function getContacts() { try { return JSON.parse(localStorage.getItem(CONTACTS_KEY)) || {}; } catch (e) { return {}; } }
-    function saveContacts(c) { try { localStorage.setItem(CONTACTS_KEY, JSON.stringify(c)); } catch (e) {} }
-    function contactsDone() { var c = getContacts(); return !!(c.name && (c.email || c.phone || c.socials)); }
-    function markChanged() { try { localStorage.setItem('gelato_changed_' + ACCOUNT_ID, String(Date.now())); } catch (e) {} }
-    function changedAt() { return Number(localStorage.getItem('gelato_changed_' + ACCOUNT_ID) || 0); }
-    function markSubmitted() { try { localStorage.setItem('gelato_submitted_' + ACCOUNT_ID, String(Date.now())); } catch (e) {} }
-    function submittedAt() { return Number(localStorage.getItem('gelato_submitted_' + ACCOUNT_ID) || 0); }
+    var CONTACTS = {};       // hydrated from backend (source of truth)
+    var SUBMITTED = false;   // hydrated from backend
+    function getContacts() { return CONTACTS; }
+    function saveContacts(c) { CONTACTS = c || {}; }
+    function contactsDone() { return !!(CONTACTS.name && (CONTACTS.email || CONTACTS.phone || CONTACTS.socials)); }
+    function markSubmitted() { SUBMITTED = true; }
+    function submittedAt() { return SUBMITTED; }
 
     /* ---------- Questions ---------- */
     var QUESTIONS = [
@@ -209,6 +208,7 @@
             saveLink: function (n, title, url, kind) { return call('saveLink', { qNum: n, title: title, url: url, kind: kind }).then(function (r) { return r.id; }); },
             deleteLink: function (rid) { return call('deleteLink', { id: rid }); },
             saveContact: function (c) { return call('saveContact', { contact: c }); },
+            getBrief: function () { return call('getBrief', {}); },
             submit: function (isUpdate) { return call('submit', { update: !!isUpdate }); }
         };
     })();
@@ -226,7 +226,7 @@
         if (!ANS[qid]) ANS[qid] = { id: qid, voices: [], links: [] };
         return ANS[qid];
     }
-    function persist(qid) { markChanged(); Store.put(ansFor(qid)).catch(function () { toast('Не вдалося зберегти локально'); }); }
+    function persist(qid) { /* backend is the source of truth — nothing stored locally */ }
     function isAnswered(qid) { var a = ANS[qid]; return !!(a && (a.voices.length || a.links.length)); }
     function answeredCount() {
         return QUESTIONS.reduce(function (n, q) { return n + (isAnswered('q' + q.n) ? 1 : 0); }, 0);
@@ -347,8 +347,10 @@
         var clip = a.voices.filter(function (v) { return v.id === clipId; })[0]; if (!clip) return;
         if (playingId === clipId && !player.paused) { player.pause(); return; }
         if (playingUrl) { URL.revokeObjectURL(playingUrl); playingUrl = null; }
-        playingUrl = URL.createObjectURL(clip.blob);
-        player.src = playingUrl; playingId = clipId;
+        if (clip.blob) { playingUrl = URL.createObjectURL(clip.blob); player.src = playingUrl; }
+        else if (clip.url) { player.src = clip.url; }
+        else { toast('Аудіо недоступне'); return; }
+        playingId = clipId;
         player.play().catch(function () { toast('Не вдалося відтворити'); });
     }
     player.addEventListener('play', updatePlayIcons);
@@ -401,7 +403,6 @@
             : Math.round((done / total) * 100);
         return '' +
             '<div class="top">' +
-                '<div class="brand"><span class="dot"></span> Gelato</div>' +
                 '<div class="step-count">' + label + '</div>' +
             '</div>' +
             '<div class="pbar"><i style="width:' + pct + '%"></i></div>';
@@ -654,13 +655,24 @@
     /* ============================================================
        Boot
        ============================================================ */
-    Store.getAll().then(function (all) {
-        ANS = all || {};
-        QUESTIONS.forEach(function (q) { ansFor('q' + q.n); });
+    function hydrate(d) {
+        if (d.contact && d.contact.name) CONTACTS = d.contact;
+        SUBMITTED = d.status === 'submitted';
+        (d.voices || []).forEach(function (v) {
+            if (!v.q) return;
+            ansFor('q' + v.q).voices.push({ id: v.id, remoteId: v.id, url: v.url, dur: v.dur || 0, mime: v.mime, transcript: v.transcript });
+        });
+        (d.links || []).forEach(function (l) {
+            if (!l.q) return;
+            ansFor('q' + l.q).links.push({ id: l.id, remoteId: l.id, url: l.url, kind: l.kind });
+        });
+    }
+
+    QUESTIONS.forEach(function (q) { ansFor('q' + q.n); });
+    if (Sync.enabled) {
+        app.innerHTML = '<div class="card" style="margin-top:24px"><p class="help">Завантаження брифу…</p></div>';
+        Sync.getBrief().then(function (d) { if (d && d.exists) hydrate(d); render(); }).catch(function () { render(); });
+    } else {
         render();
-    }).catch(function () {
-        QUESTIONS.forEach(function (q) { ansFor('q' + q.n); });
-        toast('Локальне сховище недоступне — відповіді не збережуться');
-        render();
-    });
+    }
 })();
