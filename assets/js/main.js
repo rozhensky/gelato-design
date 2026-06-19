@@ -103,3 +103,19 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', e => { if (e.target === modal) close(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) close(); });
 })();
+
+
+// ===== Floating CTA: hidden at top, revealed once the "Найдорожче" block is reached =====
+(function () {
+    var btn = document.getElementById('floatCta');
+    var trigger = document.getElementById('cost-trigger');
+    if (!btn || !trigger) return;
+    function update() {
+        var top = trigger.getBoundingClientRect().top;
+        if (top < window.innerHeight * 0.7) btn.classList.add('cta-show');
+        else btn.classList.remove('cta-show');
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+})();

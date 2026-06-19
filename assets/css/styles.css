@@ -63,3 +63,8 @@ html, body { overflow-x: hidden; }
 @media (min-width: 1024px) {
     .lg\:mt-5 { margin-top: 4.25rem !important; }
 }
+
+
+/* ===================== floating CTA reveal ===================== */
+#floatCta { opacity: 0; transform: translateY(14px); pointer-events: none; transition: opacity .3s ease, transform .3s ease, background-color .2s ease; }
+#floatCta.cta-show { opacity: 1; transform: translateY(0); pointer-events: auto; }
