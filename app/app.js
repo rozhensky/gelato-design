@@ -521,7 +521,7 @@
         var linkBlock = wantsLinks ? (
             '<div class="block">' +
                 '<div class="block-label"><iconify-icon icon="' + (wantsVideo ? 'solar:videocamera-record-linear' : 'solar:link-linear') + '"></iconify-icon>' +
-                    (wantsVideo ? 'Посилання та відео ' : 'Посилання ') + '<span class="muted">— за бажанням</span></div>' +
+                    (wantsVideo ? 'Посилання та відео' : 'Посилання') + '</div>' +
                 linksHtml +
                 '<div class="adder">' +
                     '<input id="linkInput" type="url" inputmode="url" placeholder="' + (wantsVideo ? 'Вставте посилання або відео…' : 'Вставте посилання…') + '">' +
