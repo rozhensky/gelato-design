@@ -450,7 +450,7 @@
             '</div>';
         setBar(resuming
             ? '<button class="btn btn-ghost" id="reviewBtn">Огляд</button><button class="btn btn-primary" id="startBtn"><iconify-icon icon="solar:play-circle-bold"></iconify-icon> Продовжити · ' + done + '/10</button>'
-            : '<button class="btn btn-primary" id="startBtn">Почати <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
+            : '<button class="btn btn-primary" id="startBtn">Розпочати <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
         $('#startBtn').onclick = function () {
             var first = 0;
             for (var i = 0; i < QUESTIONS.length; i++) { if (!isAnswered('q' + QUESTIONS[i].n)) { first = i; break; } }
@@ -480,7 +480,7 @@
                 '<div class="field"><label>Соцмережі</label><input id="cSocials" type="url" inputmode="url" value="' + esc(c.socials || '') + '" placeholder="Посилання на соцмережі"></div>' +
                 '<p class="help" style="font-size:12px;margin-top:14px">Обовʼязково: імʼя та хоча б один контакт (email, телефон або соцмережі).</p>' +
             '</div>';
-        setBar('<button class="btn btn-primary" id="cNext">Розпочати <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
+        setBar('<button class="btn btn-primary" id="cNext">Перейти до питань <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
         var codeSel = $('#cCode'), phoneInp = $('#cPhone');
         if (c.phone) {
             var matched = '';
