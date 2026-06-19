@@ -17,13 +17,22 @@
 
     /* ---------- Telegram WebApp ---------- */
     var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    function tgCall(fn) { try { return fn(); } catch (e) { return undefined; } }
     if (tg) {
-        try {
-            tg.ready();
-            tg.expand();
-            if (tg.setHeaderColor) tg.setHeaderColor('#EFECE5');
-            if (tg.setBackgroundColor) tg.setBackgroundColor('#EFECE5');
-        } catch (e) { /* older clients */ }
+        tgCall(function () { tg.ready(); });
+        tgCall(function () { tg.expand(); });
+        tgCall(function () { tg.setHeaderColor('#EFECE5'); });
+        tgCall(function () { tg.setBackgroundColor('#EFECE5'); });
+        tgCall(function () { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); });
+        tgCall(function () { if (tg.enableClosingConfirmation) tg.enableClosingConfirmation(); });
+        tgCall(function () { if (tg.MainButton) tg.MainButton.hide(); });
+        // keep the layout sized to Telegram's stable viewport
+        var applyVH = function () {
+            var h = tg.viewportStableHeight || tg.viewportHeight;
+            if (h) document.documentElement.style.setProperty('--vh', h + 'px');
+        };
+        tgCall(function () { if (tg.onEvent) tg.onEvent('viewportChanged', applyVH); });
+        applyVH();
     }
     var tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
     var ACCOUNT_ID = tgUser ? ('tg_' + tgUser.id) : 'local';
@@ -88,11 +97,11 @@
     }
     function haptic(type) {
         if (!tg || !tg.HapticFeedback) return;
-        try {
+        tgCall(function () {
             if (type === 'impact') tg.HapticFeedback.impactOccurred('medium');
             else if (type === 'ok') tg.HapticFeedback.notificationOccurred('success');
             else tg.HapticFeedback.selectionChanged();
-        } catch (e) {}
+        });
     }
     var toastTimer;
     function toast(msg) {
@@ -104,8 +113,6 @@
 
     /* ============================================================
        Store — IndexedDB persistence (one record per question).
-       Record shape: { id, voices: [{id, blob, mime, dur, ts}],
-                       links: [{id, url, kind, ts}], ts }
        ============================================================ */
     var Store = (function () {
         var DB_NAME = 'gelato_brief';
@@ -151,7 +158,7 @@
     })();
 
     /* ---------- in-memory mirror for synchronous rendering ---------- */
-    var ANS = {};       // qid -> record
+    var ANS = {};
     function ansFor(qid) {
         if (!ANS[qid]) ANS[qid] = { id: qid, voices: [], links: [] };
         return ANS[qid];
@@ -167,13 +174,15 @@
        ============================================================ */
     var state = { pos: -1 };
     var app = $('#app');
+    var bar = $('#bar');
+    function setBar(html) { bar.innerHTML = html ? '<div class="bar-inner">' + html + '</div>' : ''; }
 
     function setBackButton() {
         if (!tg || !tg.BackButton) return;
-        if (state.pos > -1 && state.pos < 11) { tg.BackButton.show(); }
-        else { tg.BackButton.hide(); }
+        if (state.pos > -1 && state.pos < 11) tgCall(function () { tg.BackButton.show(); });
+        else tgCall(function () { tg.BackButton.hide(); });
     }
-    if (tg && tg.BackButton) tg.BackButton.onClick(function () { goBack(); });
+    if (tg && tg.BackButton) tgCall(function () { tg.BackButton.onClick(function () { goBack(); }); });
 
     function goBack() {
         stopRecording(true);
@@ -186,7 +195,7 @@
     /* ============================================================
        Audio recording controller
        ============================================================ */
-    var rec = { mr: null, chunks: [], stream: null, qid: null, t0: 0, int: null, active: false };
+    var rec = { mr: null, chunks: [], stream: null, qid: null, t0: 0, int: null, active: false, _discard: false };
 
     function pickMime() {
         if (!window.MediaRecorder) return null;
@@ -242,23 +251,25 @@
     }
 
     function updateRecUI() {
-        var btn = $('#recBtn'), hint = $('#recHint');
+        var btn = $('#recBtn'), hint = $('#recHint'), wrap = $('#recWrap');
         if (!btn) return;
         if (rec.active) {
             btn.classList.add('is-rec');
             btn.innerHTML = '<iconify-icon icon="solar:stop-bold"></iconify-icon>';
+            if (wrap) wrap.classList.add('live');
             if (hint) { hint.classList.add('live'); hint.textContent = '● Запис… ' + fmtTime((Date.now() - rec.t0) / 1000); }
         } else {
             btn.classList.remove('is-rec');
             btn.innerHTML = '<iconify-icon icon="solar:microphone-3-bold"></iconify-icon>';
-            if (hint) { hint.classList.remove('live'); hint.textContent = 'Натисніть, щоб записати голосову відповідь'; }
+            if (wrap) wrap.classList.remove('live');
+            if (hint) { hint.classList.remove('live'); hint.textContent = 'Натисніть, щоб записати голосову'; }
         }
     }
 
     /* ---------- playback (single shared <audio>) ---------- */
     var player = $('#player');
     var playingId = null, playingUrl = null;
-    function togglePlay(qid, clipId, btn) {
+    function togglePlay(qid, clipId) {
         var a = ANS[qid]; if (!a) return;
         var clip = a.voices.filter(function (v) { return v.id === clipId; })[0]; if (!clip) return;
         if (playingId === clipId && !player.paused) { player.pause(); return; }
@@ -267,17 +278,18 @@
         player.src = playingUrl; playingId = clipId;
         player.play().catch(function () { toast('Не вдалося відтворити'); });
     }
-    player.addEventListener('play', function () { updatePlayIcons(); });
-    player.addEventListener('pause', function () { updatePlayIcons(); });
+    player.addEventListener('play', updatePlayIcons);
+    player.addEventListener('pause', updatePlayIcons);
     player.addEventListener('ended', function () { playingId = null; updatePlayIcons(); });
     function updatePlayIcons() {
         document.querySelectorAll('[data-play]').forEach(function (b) {
             var on = (b.getAttribute('data-clip') === playingId) && !player.paused;
-            b.querySelector('iconify-icon').setAttribute('icon', on ? 'solar:pause-bold' : 'solar:play-bold');
+            var ic = b.querySelector('iconify-icon');
+            if (ic) ic.setAttribute('icon', on ? 'solar:pause-bold' : 'solar:play-bold');
         });
     }
 
-    /* ---------- delete helpers ---------- */
+    /* ---------- mutations ---------- */
     function deleteVoice(qid, clipId) {
         var a = ANS[qid]; if (!a) return;
         if (playingId === clipId) { player.pause(); playingId = null; }
@@ -296,8 +308,6 @@
         persist(qid); haptic(); render();
         return true;
     }
-
-    /* ---------- file fallback (attach audio file) ---------- */
     function addAudioFile(qid, file) {
         if (!file) return;
         ansFor(qid).voices.push({ id: uid(), blob: file, mime: file.type || 'audio/*', dur: 0, ts: Date.now() });
@@ -310,7 +320,7 @@
     function topChrome(label) {
         var total = QUESTIONS.length, done = answeredCount();
         var pct = state.pos >= 0 && state.pos <= 9
-            ? Math.round(((state.pos) / total) * 100)
+            ? Math.round((state.pos / total) * 100)
             : Math.round((done / total) * 100);
         return '' +
             '<div class="top">' +
@@ -328,6 +338,11 @@
         return renderDone();
     }
 
+    function feat(icon, t, d) {
+        return '<div class="feat"><div class="fi"><iconify-icon icon="' + icon + '"></iconify-icon></div>' +
+               '<div class="ft"><b>' + t + '</b>' + d + '</div></div>';
+    }
+
     function renderIntro() {
         var done = answeredCount();
         var resuming = done > 0;
@@ -343,24 +358,16 @@
                     feat('solar:link-linear', 'Посилання та відео', 'Кидайте конкурентів, референси, огляди чи Loom — усе в одному місці.') +
                     feat('solar:diskette-linear', 'Зберігається саме', 'Можна вийти й повернутись будь-коли — відповіді лишаться на вашому акаунті.') +
                 '</div>' +
-                '<div class="nav">' +
-                    '<button class="btn btn-primary" id="startBtn">' +
-                        (resuming ? '<iconify-icon icon="solar:play-circle-bold"></iconify-icon> Продовжити (' + done + '/10)'
-                                  : 'Почати <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>') +
-                    '</button>' +
-                '</div>' +
-                (resuming ? '<div class="nav"><button class="btn btn-ghost" id="reviewBtn">Переглянути відповіді</button></div>' : '') +
             '</div>';
+        setBar(resuming
+            ? '<button class="btn btn-ghost" id="reviewBtn">Огляд</button><button class="btn btn-primary" id="startBtn"><iconify-icon icon="solar:play-circle-bold"></iconify-icon> Продовжити · ' + done + '/10</button>'
+            : '<button class="btn btn-primary" id="startBtn">Почати <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
         $('#startBtn').onclick = function () {
-            var firstUnanswered = 0;
-            for (var i = 0; i < QUESTIONS.length; i++) { if (!isAnswered('q' + QUESTIONS[i].n)) { firstUnanswered = i; break; } }
-            goTo(resuming ? firstUnanswered : 0);
+            var first = 0;
+            for (var i = 0; i < QUESTIONS.length; i++) { if (!isAnswered('q' + QUESTIONS[i].n)) { first = i; break; } }
+            goTo(resuming ? first : 0);
         };
         if ($('#reviewBtn')) $('#reviewBtn').onclick = function () { goTo(10); };
-    }
-    function feat(icon, t, d) {
-        return '<div class="feat"><div class="fi"><iconify-icon icon="' + icon + '"></iconify-icon></div>' +
-               '<div class="ft"><b>' + t + '</b>' + d + '</div></div>';
     }
 
     function renderQuestion(idx) {
@@ -373,19 +380,17 @@
             return '<span class="chip"><iconify-icon icon="' + m.icon + '"></iconify-icon>' + m.label + '</span>';
         }).join('');
 
-        // voice clips
         var voicesHtml = a.voices.length
             ? '<div class="list">' + a.voices.map(function (v, i) {
                 return '<div class="row">' +
                     '<button class="icon-btn" data-play data-clip="' + v.id + '"><iconify-icon icon="solar:play-bold"></iconify-icon></button>' +
-                    '<div class="meta"><div class="ln1">Голосова ' + (i + 1) + '</div>' +
+                    '<div class="meta"><span class="ln1">Голосова ' + (i + 1) + '</span>' +
                     '<div class="ln2">' + (v.dur ? fmtTime(v.dur) : 'аудіофайл') + '</div></div>' +
                     '<button class="del" data-delvoice="' + v.id + '"><iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon></button>' +
                 '</div>';
             }).join('') + '</div>'
             : '';
 
-        // links
         var linksHtml = a.links.length
             ? '<div class="list">' + a.links.map(function (l) {
                 var ic = l.kind === 'video' ? 'solar:videocamera-record-linear' : 'solar:link-linear';
@@ -420,27 +425,28 @@
 
                 '<div class="block">' +
                     '<div class="block-label"><iconify-icon icon="solar:microphone-3-linear"></iconify-icon>Голосова відповідь</div>' +
-                    '<div class="rec-wrap">' +
+                    '<div class="rec-wrap" id="recWrap">' +
                         '<button class="rec" id="recBtn"><iconify-icon icon="solar:microphone-3-bold"></iconify-icon></button>' +
-                        '<div class="rec-hint" id="recHint">Натисніть, щоб записати голосову відповідь</div>' +
+                        '<div class="eq"><i></i><i></i><i></i><i></i><i></i></div>' +
+                        '<div class="rec-hint" id="recHint">Натисніть, щоб записати голосову</div>' +
                     '</div>' +
                     voicesHtml +
                     '<div class="file-fallback"><label>Або завантажити аудіофайл<input type="file" id="audioFile" accept="audio/*"></label></div>' +
                 '</div>' +
 
                 linkBlock +
-
-                '<div class="nav">' +
-                    '<button class="btn btn-ghost" id="prevBtn"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon> Назад</button>' +
-                    '<button class="btn btn-primary" id="nextBtn">' + (last ? 'До огляду' : 'Далі') + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>' +
-                '</div>' +
             '</div>';
+
+        setBar(
+            '<button class="btn btn-ghost narrow" id="prevBtn"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>' +
+            '<button class="btn btn-primary" id="nextBtn">' + (last ? 'До огляду' : 'Далі') + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
+        );
 
         updateRecUI();
         $('#recBtn').onclick = function () { if (rec.active) stopRecording(false); else startRecording(qid); };
         $('#audioFile').onchange = function (e) { addAudioFile(qid, e.target.files[0]); };
         document.querySelectorAll('[data-play]').forEach(function (b) {
-            b.onclick = function () { togglePlay(qid, b.getAttribute('data-clip'), b); };
+            b.onclick = function () { togglePlay(qid, b.getAttribute('data-clip')); };
         });
         document.querySelectorAll('[data-delvoice]').forEach(function (b) {
             b.onclick = function () { deleteVoice(qid, b.getAttribute('data-delvoice')); };
@@ -449,12 +455,12 @@
             b.onclick = function () { deleteLink(qid, b.getAttribute('data-dellink')); };
         });
         if (wantsLinks) {
-            var inp = $('#linkInput'), addb = $('#linkAdd');
+            var inp = $('#linkInput');
             var doAdd = function () {
                 var kind = /youtu\.?be|loom\.com|vimeo|\.mp4|\.mov/i.test(inp.value) ? 'video' : 'link';
-                if (addLink(qid, inp.value, wantsVideo ? kind : 'link')) { /* re-rendered */ }
+                addLink(qid, inp.value, wantsVideo ? kind : 'link');
             };
-            addb.onclick = doAdd;
+            $('#linkAdd').onclick = doAdd;
             inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
         }
         $('#prevBtn').onclick = function () { goTo(idx === 0 ? -1 : idx - 1); };
@@ -469,11 +475,11 @@
             if (a.voices.length) bits.push(a.voices.length + ' голос.');
             if (a.links.length) bits.push(a.links.length + ' посил.');
             var sub = bits.length ? bits.join(' · ') : 'Ще не заповнено';
-            return '<div class="rev-item" data-go="' + i + '">' +
-                '<div class="rev-badge ' + (ok ? 'done' : 'todo') + '">' + (ok ? '<iconify-icon icon="solar:check-bold" style="font-size:15px"></iconify-icon>' : q.n) + '</div>' +
-                '<div class="rev-main"><div class="rt">' + esc(q.title) + '</div><div class="rs">' + sub + '</div></div>' +
+            return '<button class="rev-item" data-go="' + i + '">' +
+                '<span class="rev-badge ' + (ok ? 'done' : 'todo') + '">' + (ok ? '<iconify-icon icon="solar:check-bold" style="font-size:15px"></iconify-icon>' : q.n) + '</span>' +
+                '<span class="rev-main"><span class="rt">' + esc(q.title) + '</span><span class="rs">' + sub + '</span></span>' +
                 '<span class="go"><iconify-icon icon="solar:pen-2-linear"></iconify-icon></span>' +
-            '</div>';
+            '</button>';
         }).join('');
 
         app.innerHTML =
@@ -481,14 +487,14 @@
             '<div class="card">' +
                 '<div class="eyebrow">Майже готово</div>' +
                 '<h2 class="qtitle">Перегляньте бриф</h2>' +
-                '<p class="help">Заповнено ' + done + ' із ' + QUESTIONS.length + '. Можна доповнити будь-яке питання або надіслати як є — ми все одно уточнимо деталі на сесії.</p>' +
-                '<div style="margin-top:18px">' + items + '</div>' +
-                '<div class="nav">' +
-                    '<button class="btn btn-ghost" id="backIntro"><iconify-icon icon="solar:home-2-linear"></iconify-icon> На початок</button>' +
-                    '<button class="btn btn-primary" id="submitBtn">Надіслати бриф <iconify-icon icon="solar:plain-2-bold"></iconify-icon></button>' +
-                '</div>' +
+                '<p class="help">Заповнено ' + done + ' із ' + QUESTIONS.length + '. Можна доповнити будь-яке питання або надіслати як є — деталі все одно уточнимо на сесії.</p>' +
+                '<div class="rev-list">' + items + '</div>' +
             '</div>';
 
+        setBar(
+            '<button class="btn btn-ghost narrow" id="backIntro"><iconify-icon icon="solar:home-2-linear"></iconify-icon></button>' +
+            '<button class="btn btn-primary" id="submitBtn">Надіслати бриф <iconify-icon icon="solar:plain-2-bold"></iconify-icon></button>'
+        );
         document.querySelectorAll('[data-go]').forEach(function (it) {
             it.onclick = function () { goTo(parseInt(it.getAttribute('data-go'), 10)); };
         });
@@ -502,12 +508,9 @@
                 '<div class="done-ic"><iconify-icon icon="solar:check-read-linear"></iconify-icon></div>' +
                 '<h2 class="qtitle" style="margin-top:0">Бриф надіслано</h2>' +
                 '<p class="help" style="margin-left:auto;margin-right:auto;max-width:34ch">Дякуємо! Ми вивчимо матеріали й підготуємось до стратегічної сесії. Відповіді лишаються у вас — можна повернутись і доповнити.</p>' +
-                '<div class="nav" style="justify-content:center;margin-top:22px">' +
-                    '<button class="btn btn-ghost" id="reopen" style="flex:0 1 auto;padding-left:26px;padding-right:26px">Відкрити бриф знову</button>' +
-                '</div>' +
             '</div></div>';
+        setBar('<button class="btn btn-ghost" id="reopen">Відкрити бриф знову</button>');
         $('#reopen').onclick = function () { goTo(10); };
-        if (tg && tg.MainButton) { try { tg.MainButton.hide(); } catch (e) {} }
     }
 
     /* ============================================================
@@ -524,15 +527,15 @@
                 var a = ansFor('q' + q.n);
                 return {
                     n: q.n, title: q.title,
-                    voices: a.voices.length, // blobs uploaded separately in backend phase
+                    voices: a.voices.length,
                     links: a.links.map(function (l) { return { url: l.url, kind: l.kind }; })
                 };
             })
         };
         try { localStorage.setItem('gelato_brief_submitted_' + ACCOUNT_ID, JSON.stringify({ ts: Date.now(), summary: payload.answers })); } catch (e) {}
         haptic('ok');
-        // Backend hook goes here, e.g.:
-        // fetch(API + '/brief', {method:'POST', body: buildFormData(payload)})
+        // Backend hook (phase 2):
+        // fetch(API + '/brief', { method: 'POST', body: buildFormData(payload) })
         toast('Бриф збережено');
         goTo(11);
     }
@@ -542,11 +545,9 @@
        ============================================================ */
     Store.getAll().then(function (all) {
         ANS = all || {};
-        // ensure shape
         QUESTIONS.forEach(function (q) { ansFor('q' + q.n); });
         render();
     }).catch(function () {
-        // IndexedDB unavailable — run in-memory only
         QUESTIONS.forEach(function (q) { ansFor('q' + q.n); });
         toast('Локальне сховище недоступне — відповіді не збережуться');
         render();
