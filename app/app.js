@@ -40,6 +40,10 @@
     function getContacts() { try { return JSON.parse(localStorage.getItem(CONTACTS_KEY)) || {}; } catch (e) { return {}; } }
     function saveContacts(c) { try { localStorage.setItem(CONTACTS_KEY, JSON.stringify(c)); } catch (e) {} }
     function contactsDone() { var c = getContacts(); return !!(c.name && (c.email || c.phone || c.socials)); }
+    function markChanged() { try { localStorage.setItem('gelato_changed_' + ACCOUNT_ID, String(Date.now())); } catch (e) {} }
+    function changedAt() { return Number(localStorage.getItem('gelato_changed_' + ACCOUNT_ID) || 0); }
+    function markSubmitted() { try { localStorage.setItem('gelato_submitted_' + ACCOUNT_ID, String(Date.now())); } catch (e) {} }
+    function submittedAt() { return Number(localStorage.getItem('gelato_submitted_' + ACCOUNT_ID) || 0); }
 
     /* ---------- Questions ---------- */
     var QUESTIONS = [
@@ -205,7 +209,7 @@
             saveLink: function (n, title, url, kind) { return call('saveLink', { qNum: n, title: title, url: url, kind: kind }).then(function (r) { return r.id; }); },
             deleteLink: function (rid) { return call('deleteLink', { id: rid }); },
             saveContact: function (c) { return call('saveContact', { contact: c }); },
-            submit: function () { return call('submit', {}); }
+            submit: function (isUpdate) { return call('submit', { update: !!isUpdate }); }
         };
     })();
 
@@ -222,7 +226,7 @@
         if (!ANS[qid]) ANS[qid] = { id: qid, voices: [], links: [] };
         return ANS[qid];
     }
-    function persist(qid) { Store.put(ansFor(qid)).catch(function () { toast('Не вдалося зберегти локально'); }); }
+    function persist(qid) { markChanged(); Store.put(ansFor(qid)).catch(function () { toast('Не вдалося зберегти локально'); }); }
     function isAnswered(qid) { var a = ANS[qid]; return !!(a && (a.voices.length || a.links.length)); }
     function answeredCount() {
         return QUESTIONS.reduce(function (n, q) { return n + (isAnswered('q' + q.n) ? 1 : 0); }, 0);
@@ -588,6 +592,14 @@
 
     function renderReview() {
         var done = answeredCount();
+        var total = QUESTIONS.length;
+        var all = done === total;
+        var sAt = submittedAt(), dirty = changedAt() > sAt;
+        var helpTxt = !all
+            ? ('Заповнено ' + done + ' із ' + total + '. Надіслати можна, коли заповните всі питання.')
+            : (!sAt ? 'Усе заповнено — можна надсилати бриф.'
+                    : (dirty ? 'Є зміни після надсилання — можна надіслати оновлення.'
+                             : 'Бриф надіслано ✅. Можете доповнити будь-яке питання.'));
         var items = QUESTIONS.map(function (q, i) {
             var qid = 'q' + q.n, a = ansFor(qid), ok = isAnswered(qid);
             var bits = [];
@@ -604,21 +616,21 @@
         app.innerHTML =
             topChrome('Огляд · ' + done + '/' + QUESTIONS.length) +
             '<div class="card">' +
-                '<div class="eyebrow">Майже готово</div>' +
+                '<div class="eyebrow">' + (sAt && !dirty ? 'Готово' : 'Майже готово') + '</div>' +
                 '<h2 class="qtitle">Перегляньте бриф</h2>' +
-                '<p class="help">Заповнено ' + done + ' із ' + QUESTIONS.length + '. Можна доповнити будь-яке питання або надіслати як є — деталі все одно уточнимо на сесії.</p>' +
+                '<p class="help">' + helpTxt + '</p>' +
                 '<div class="rev-list">' + items + '</div>' +
             '</div>';
 
-        setBar(
-            '<button class="btn btn-ghost narrow" id="backIntro"><iconify-icon icon="solar:home-2-linear"></iconify-icon></button>' +
-            '<button class="btn btn-primary" id="submitBtn">Надіслати бриф <iconify-icon icon="solar:plain-2-bold"></iconify-icon></button>'
-        );
+        var barHtml = '';
+        if (all && (!sAt || dirty)) {
+            barHtml = '<button class="btn btn-primary" id="submitBtn">' + (sAt ? 'Надіслати оновлення' : 'Надіслати бриф') + ' <iconify-icon icon="' + (sAt ? 'solar:refresh-linear' : 'solar:plain-2-bold') + '"></iconify-icon></button>';
+        }
+        setBar(barHtml);
         document.querySelectorAll('[data-go]').forEach(function (it) {
             it.onclick = function () { goTo(parseInt(it.getAttribute('data-go'), 10)); };
         });
-        $('#backIntro').onclick = function () { goTo(-1); };
-        $('#submitBtn').onclick = function () { submitBrief(); };
+        var sbtn = document.getElementById('submitBtn'); if (sbtn) sbtn.onclick = function () { submitBrief(!!sAt); };
     }
 
     function renderDone() {
@@ -637,27 +649,12 @@
        (validate Telegram initData, upload audio to storage, notify
        team). The collected payload is assembled here for that swap.
        ============================================================ */
-    function submitBrief() {
-        var payload = {
-            account: ACCOUNT_ID,
-            tgUser: tgUser ? { id: tgUser.id, username: tgUser.username, name: tgUser.first_name } : null,
-            initData: tg ? tg.initData : null,
-            answers: QUESTIONS.map(function (q) {
-                var a = ansFor('q' + q.n);
-                return {
-                    n: q.n, title: q.title,
-                    voices: a.voices.length,
-                    links: a.links.map(function (l) { return { url: l.url, kind: l.kind }; })
-                };
-            })
-        };
-        try { localStorage.setItem('gelato_brief_submitted_' + ACCOUNT_ID, JSON.stringify({ ts: Date.now(), summary: payload.answers })); } catch (e) {}
+    function submitBrief(isUpdate) {
+        markSubmitted();
+        if (Sync.enabled) Sync.submit(isUpdate).catch(function () {});
         haptic('ok');
-        if (Sync.enabled) Sync.submit().catch(function () {});
-        // Backend hook (phase 2):
-        // fetch(API + '/brief', { method: 'POST', body: buildFormData(payload) })
-        toast('Бриф збережено');
-        goTo(11);
+        if (isUpdate) { toast('Оновлення надіслано'); render(); }
+        else { goTo(11); }
     }
 
     /* ============================================================

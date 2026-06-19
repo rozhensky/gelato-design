@@ -140,9 +140,24 @@ Deno.serve(async (req) => {
         return json({ ok: true });
       }
 
-      case "submit":
+      case "submit": {
+        const isUpdate = !!body.update;
         await db.from("briefs").update({ status: "submitted", submitted_at: new Date().toISOString() }).eq("id", brief.id);
+        const ADMIN = Deno.env.get("ADMIN_CHAT_ID");
+        if (ADMIN && BOT_TOKEN) {
+          const who = brief.contact_name || brief.tg_name || accountId;
+          const handle = brief.tg_username ? " (@" + brief.tg_username + ")" : "";
+          const text = (isUpdate ? "\u{1F501} Бриф оновлено: " : "\u{2705} Новий бриф: ") + who + handle + "\n\nДеталі: https://gelato.design/admin/";
+          try {
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ chat_id: ADMIN, text }),
+            });
+          } catch (_e) { /* ignore notify failure */ }
+        }
         return json({ ok: true });
+      }
 
       default:
         return json({ error: "unknown action" }, 400);
