@@ -167,7 +167,7 @@
 
     app.innerHTML = topBar(me) +
       '<div class="bar"><button class="btn btn-ghost btn-sm" id="back"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon> Усі брифи</button>' +
-      '<button class="btn btn-primary btn-sm" id="export"><iconify-icon icon="solar:download-minimalistic-linear"></iconify-icon> Передати дані</button></div>' +
+      '<button class="btn btn-primary btn-sm" id="export"><iconify-icon icon="solar:download-minimalistic-linear"></iconify-icon> Передати дані</button>' + '<button class="btn btn-ghost btn-sm danger" id="del"><iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon> Видалити</button></div>' +
       '<div class="card"><div class="eyebrow">Бриф</div><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 4px"><h1>' + esc(brief.tg_name || brief.account_id) + "</h1>" +
       (brief.status === "submitted" ? '<span class="pill sub">Надіслано</span>' : '<span class="pill prog">В процесі</span>') + "</div>" +
       '<p class="muted" style="font-size:13px">' + (brief.tg_username ? "@" + esc(brief.tg_username) + " · " : "") + esc(brief.account_id) + " · оновлено " + fmtDate(brief.updated_at) + "</p>" +
@@ -176,6 +176,15 @@
 
     document.getElementById("back").onclick = function () { renderList(); };
     document.getElementById("export").onclick = function () { exportBrief(); };
+    document.getElementById("del").onclick = async function () {
+      if (!confirm("Видалити цей бриф? Усі відповіді й аудіо зникнуть. Дію не можна скасувати.")) return;
+      var paths = (current && current.voices ? current.voices : []).map(function (v) { return v.storage_path; }).filter(Boolean);
+      if (paths.length) { try { await sb.storage.from("voices").remove(paths); } catch (e) {} }
+      var r = await sb.from("briefs").delete().eq("id", brief.id);
+      if (r.error) { toastMsg("Помилка: " + r.error.message); return; }
+      toastMsg("Бриф видалено");
+      renderList();
+    };
     bindLogout();
   }
 

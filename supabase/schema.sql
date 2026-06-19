@@ -103,5 +103,11 @@ create policy "self admin row"     on admins  for select using (email = (auth.jw
 create policy "admin read voice objects" on storage.objects for select
     using (bucket_id = 'voices' and is_admin());
 
+-- allow admins to DELETE briefs (cascades answers/voices/links) and the audio objects
+drop policy if exists "admin delete briefs" on briefs;
+create policy "admin delete briefs" on briefs for delete using (is_admin());
+drop policy if exists "admin delete voice objects" on storage.objects;
+create policy "admin delete voice objects" on storage.objects for delete using (bucket_id = 'voices' and is_admin());
+
 -- Add your team emails:
 -- insert into admins (email) values ('you@example.com');
