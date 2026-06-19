@@ -157,6 +157,52 @@
         };
     })();
 
+    /* ============================================================
+       Sync — best-effort push of answers to the Supabase backend.
+       Enabled only inside Telegram (needs initData) with config set;
+       otherwise the app stays local-only (IndexedDB) as before.
+       ============================================================ */
+    var Sync = (function () {
+        var CFG = window.GELATO_SUPABASE || {};
+        var client = (CFG.url && CFG.anonKey && window.supabase) ? window.supabase.createClient(CFG.url, CFG.anonKey) : null;
+        var enabled = !!(client && tg && tg.initData);
+        function call(action, payload) {
+            return client.functions.invoke('save', { body: Object.assign({ initData: tg.initData, action: action }, payload || {}) })
+                .then(function (res) { if (res.error) throw res.error; return res.data; });
+        }
+        function extOf(mime) {
+            mime = mime || '';
+            if (mime.indexOf('mp4') > -1) return 'mp4';
+            if (mime.indexOf('ogg') > -1) return 'ogg';
+            if (mime.indexOf('mpeg') > -1 || mime.indexOf('mp3') > -1) return 'mp3';
+            if (mime.indexOf('wav') > -1) return 'wav';
+            return 'webm';
+        }
+        return {
+            enabled: enabled,
+            uploadVoice: function (n, title, clip) {
+                return call('requestUpload', { qNum: n, title: title, ext: extOf(clip.mime), mime: clip.mime })
+                    .then(function (up) {
+                        return client.storage.from('voices').uploadToSignedUrl(up.path, up.token, clip.blob)
+                            .then(function (r) { if (r.error) throw r.error; return up.path; });
+                    })
+                    .then(function (path) { return call('recordVoice', { qNum: n, title: title, path: path, mime: clip.mime, duration: clip.dur }); })
+                    .then(function (rec) { return rec.id; });
+            },
+            deleteVoice: function (rid) { return call('deleteVoice', { id: rid }); },
+            saveLink: function (n, title, url, kind) { return call('saveLink', { qNum: n, title: title, url: url, kind: kind }).then(function (r) { return r.id; }); },
+            deleteLink: function (rid) { return call('deleteLink', { id: rid }); },
+            submit: function () { return call('submit', {}); }
+        };
+    })();
+
+    function qMeta(qid) { var n = parseInt(qid.slice(1), 10); return { n: n, title: (QUESTIONS[n - 1] || {}).title || '' }; }
+    function syncVoice(qid, clip) {
+        if (!Sync.enabled) return;
+        var m = qMeta(qid);
+        Sync.uploadVoice(m.n, m.title, clip).then(function (rid) { clip.remoteId = rid; persist(qid); }).catch(function () {});
+    }
+
     /* ---------- in-memory mirror for synchronous rendering ---------- */
     var ANS = {};
     function ansFor(qid) {
@@ -244,8 +290,10 @@
         var blob = new Blob(chunks, { type: type });
         if (blob.size < 600) { toast('Запис надто короткий'); updateRecUI(); return; }
         var a = ansFor(qid);
-        a.voices.push({ id: uid(), blob: blob, mime: type, dur: dur, ts: Date.now() });
+        var clip = { id: uid(), blob: blob, mime: type, dur: dur, ts: Date.now() };
+        a.voices.push(clip);
         persist(qid);
+        syncVoice(qid, clip);
         haptic('ok');
         if (state.pos >= 0 && state.pos <= 9 && 'q' + QUESTIONS[state.pos].n === qid) render();
     }
@@ -292,26 +340,36 @@
     /* ---------- mutations ---------- */
     function deleteVoice(qid, clipId) {
         var a = ANS[qid]; if (!a) return;
+        var clip = a.voices.filter(function (v) { return v.id === clipId; })[0];
         if (playingId === clipId) { player.pause(); playingId = null; }
         a.voices = a.voices.filter(function (v) { return v.id !== clipId; });
-        persist(qid); render();
+        persist(qid);
+        if (clip && clip.remoteId && Sync.enabled) Sync.deleteVoice(clip.remoteId).catch(function () {});
+        render();
     }
     function deleteLink(qid, linkId) {
         var a = ANS[qid]; if (!a) return;
+        var link = a.links.filter(function (l) { return l.id === linkId; })[0];
         a.links = a.links.filter(function (l) { return l.id !== linkId; });
-        persist(qid); render();
+        persist(qid);
+        if (link && link.remoteId && Sync.enabled) Sync.deleteLink(link.remoteId).catch(function () {});
+        render();
     }
     function addLink(qid, raw, kind) {
         var url = normalizeUrl(raw);
         if (!url) { toast('Перевірте посилання'); return false; }
-        ansFor(qid).links.push({ id: uid(), url: url, kind: kind || 'link', ts: Date.now() });
-        persist(qid); haptic(); render();
+        var link = { id: uid(), url: url, kind: kind || 'link', ts: Date.now() };
+        ansFor(qid).links.push(link);
+        persist(qid);
+        if (Sync.enabled) { var m = qMeta(qid); Sync.saveLink(m.n, m.title, link.url, link.kind).then(function (id) { link.remoteId = id; persist(qid); }).catch(function () {}); }
+        haptic(); render();
         return true;
     }
     function addAudioFile(qid, file) {
         if (!file) return;
-        ansFor(qid).voices.push({ id: uid(), blob: file, mime: file.type || 'audio/*', dur: 0, ts: Date.now() });
-        persist(qid); haptic('ok'); render();
+        var clip = { id: uid(), blob: file, mime: file.type || 'audio/*', dur: 0, ts: Date.now() };
+        ansFor(qid).voices.push(clip);
+        persist(qid); syncVoice(qid, clip); haptic('ok'); render();
     }
 
     /* ============================================================
@@ -534,6 +592,7 @@
         };
         try { localStorage.setItem('gelato_brief_submitted_' + ACCOUNT_ID, JSON.stringify({ ts: Date.now(), summary: payload.answers })); } catch (e) {}
         haptic('ok');
+        if (Sync.enabled) Sync.submit().catch(function () {});
         // Backend hook (phase 2):
         // fetch(API + '/brief', { method: 'POST', body: buildFormData(payload) })
         toast('Бриф збережено');

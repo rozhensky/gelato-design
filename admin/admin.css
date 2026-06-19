@@ -1,0 +1,80 @@
+/* ============================================================
+   Gelato — Admin (brief inbox). PaperFlow style, desktop-first.
+   ============================================================ */
+:root {
+    --primary: #E65C00; --primary-d: #CC5200; --grad-a: #E65C00; --grad-b: #FF8C40;
+    --surface: #FDFBF7; --surface-2: #F7F4EB; --warm: #FFF5E6; --dark: #23201D;
+    --line: rgba(168,162,158,0.28); --line-2: rgba(168,162,158,0.16);
+    --t900:#1c1917; --t700:#44403c; --t500:#78716c; --t400:#a8a29e; --danger:#dc2626; --ok:#16a34a;
+}
+* { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+html, body { margin: 0; padding: 0; background: #EFECE5; background-image: radial-gradient(120% 60% at 50% 0%, #FBF6EE 0%, #EFECE5 60%); color: var(--t700); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+button { font: inherit; cursor: pointer; }
+a { color: var(--primary); }
+code { background: #efe7da; padding: 1px 5px; border-radius: 5px; font-size: 0.9em; }
+
+.wrap { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
+
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+.brand { display: flex; align-items: center; gap: 9px; font-weight: 600; color: var(--t900); font-size: 17px; letter-spacing: -0.01em; }
+.brand .dot { width: 10px; height: 10px; border-radius: 9999px; background: linear-gradient(135deg, var(--grad-a), var(--grad-b)); box-shadow: 0 0 0 3px rgba(230,92,0,0.12); }
+.top .who { font-size: 13px; color: var(--t400); display: flex; align-items: center; gap: 12px; }
+
+.card { background: linear-gradient(to bottom, #FDFBF7, #F6F2E9); border: 1px solid rgba(231,224,214,0.9); border-radius: 22px; padding: 26px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), 0 10px 30px rgba(48,38,28,0.05); }
+.card + .card { margin-top: 16px; }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.12em; font-size: 11px; color: var(--t400); font-weight: 600; }
+h1 { font-size: 26px; letter-spacing: -0.02em; color: var(--t900); margin: 6px 0 0; font-weight: 600; }
+h2 { font-size: 20px; letter-spacing: -0.01em; color: var(--t900); margin: 0; font-weight: 600; }
+.muted { color: var(--t400); }
+
+.btn { border: none; border-radius: 9999px; padding: 12px 20px; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-primary { background: var(--primary); color: #fff; box-shadow: 0 8px 22px rgba(230,92,0,0.26); }
+.btn-primary:active { background: var(--primary-d); }
+.btn-ghost { background: #fff; color: var(--t700); border: 1px solid var(--line); }
+.btn-ghost:active { background: var(--surface-2); }
+.btn-sm { padding: 7px 13px; font-size: 12.5px; }
+.btn iconify-icon { font-size: 17px; }
+
+input[type=email] { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; font-size: 15px; color: var(--t900); background: #fff; outline: none; }
+input[type=email]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230,92,0,0.1); }
+
+/* login */
+.login { max-width: 420px; margin: 8vh auto 0; }
+.login .row { display: flex; gap: 10px; margin-top: 16px; }
+
+/* brief list */
+.list { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.brief-row { display: flex; align-items: center; gap: 16px; width: 100%; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; transition: box-shadow 0.15s, transform 0.05s; }
+.brief-row:hover { box-shadow: 0 6px 20px rgba(48,38,28,0.07); }
+.brief-row:active { transform: translateY(1px); }
+.brief-row .av { width: 42px; height: 42px; border-radius: 9999px; flex-shrink: 0; background: var(--warm); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; }
+.brief-row .nm { flex: 1; min-width: 0; }
+.brief-row .nm .t { font-size: 15px; font-weight: 500; color: var(--t900); }
+.brief-row .nm .s { font-size: 12.5px; color: var(--t400); margin-top: 2px; }
+.pill { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; border-radius: 9999px; padding: 4px 10px; }
+.pill.sub { background: #dcfce7; color: #15803d; }
+.pill.prog { background: #fef3c7; color: #b45309; }
+
+/* brief detail */
+.qblock { padding: 18px 0; border-bottom: 1px solid var(--line-2); }
+.qblock:last-child { border-bottom: none; }
+.qhead { display: flex; align-items: baseline; gap: 10px; }
+.qhead .qn { color: var(--primary); font-weight: 700; font-size: 13px; }
+.qhead .qt { font-size: 16px; font-weight: 600; color: var(--t900); }
+.qempty { font-size: 13px; color: var(--t400); font-style: italic; margin-top: 8px; }
+.voice { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-top: 10px; }
+.voice .vh { display: flex; align-items: center; gap: 10px; }
+.voice audio { height: 34px; flex: 1; min-width: 0; }
+.voice .tx { font-size: 14px; line-height: 1.55; color: var(--t700); margin-top: 10px; white-space: pre-wrap; }
+.voice .pending { font-size: 12.5px; color: var(--t400); font-style: italic; margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+.linkrow { display: flex; align-items: center; gap: 9px; margin-top: 8px; font-size: 14px; }
+.linkrow iconify-icon { color: var(--primary); }
+.linkrow a { word-break: break-all; }
+
+.bar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.notice { background: var(--warm); border: 1px solid rgba(230,92,0,0.15); border-radius: 14px; padding: 14px 16px; font-size: 13.5px; line-height: 1.5; color: var(--t700); }
+
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--dark); color: #fff; font-size: 13px; padding: 10px 16px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 100; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.spin { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
