@@ -24,7 +24,6 @@
         tgCall(function () { tg.setHeaderColor('#EFECE5'); });
         tgCall(function () { tg.setBackgroundColor('#EFECE5'); });
         tgCall(function () { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); });
-        tgCall(function () { if (tg.enableClosingConfirmation) tg.enableClosingConfirmation(); });
         tgCall(function () { if (tg.MainButton) tg.MainButton.hide(); });
         // keep the layout sized to Telegram's stable viewport
         var applyVH = function () {
@@ -506,7 +505,7 @@
             if (!/.+@.+\..+/.test(data.email)) { toast('Вкажіть коректний email'); return; }
             if (!pnat) { toast('Вкажіть номер телефону'); return; }
             saveContacts(data);
-            if (Sync.enabled) Sync.saveContact(data).catch(function () {});
+            if (Sync.enabled) Sync.saveContact(data).catch(function () { toast('Не вдалося зберегти контакти — перевірте бекенд'); });
             haptic('ok');
             var first = 0;
             for (var i = 0; i < QUESTIONS.length; i++) { if (!isAnswered('q' + QUESTIONS[i].n)) { first = i; break; } }
@@ -699,7 +698,7 @@
     QUESTIONS.forEach(function (q) { ansFor('q' + q.n); });
     if (Sync.enabled) {
         app.innerHTML = '<div class="card" style="margin-top:24px"><p class="help">Завантаження брифу…</p></div>';
-        Sync.getBrief().then(function (d) { if (d && d.exists) hydrate(d); state.pos = entryPos(); render(); }).catch(function () { state.pos = entryPos(); render(); });
+        Sync.getBrief().then(function (d) { if (d && d.exists) hydrate(d); state.pos = entryPos(); render(); }).catch(function () { toast('Бриф не завантажився — перевірте функцію save'); state.pos = entryPos(); render(); });
     } else {
         state.pos = entryPos();
         render();
