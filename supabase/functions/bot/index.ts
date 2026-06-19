@@ -37,13 +37,16 @@ Deno.serve(async (req) => {
     const text = (msg && typeof msg.text === "string") ? msg.text.trim() : "";
     // reply ONLY to /start — avoids greeting on every message
     if (msg && msg.chat && msg.chat.id && text.startsWith("/start")) {
-      await tg("sendMessage", {
+      const p = tg("sendMessage", {
         chat_id: msg.chat.id,
         text: WELCOME,
         reply_markup: {
           inline_keyboard: [[{ text: "📝 Відкрити бриф", web_app: { url: APP_URL } }]],
         },
       });
+      // answer Telegram instantly so it never retries (which would duplicate the reply)
+      if (typeof EdgeRuntime !== "undefined" && EdgeRuntime.waitUntil) EdgeRuntime.waitUntil(p);
+      else await p;
     }
     return new Response("ok");
   } catch (_e) {
