@@ -496,11 +496,6 @@
         var wantsLinks = q.formats.indexOf('links') > -1 || q.formats.indexOf('video') > -1;
         var wantsVideo = q.formats.indexOf('video') > -1;
 
-        var chips = q.formats.map(function (f) {
-            var m = FORMAT_META[f];
-            return '<span class="chip"><iconify-icon icon="' + m.icon + '"></iconify-icon>' + m.label + '</span>';
-        }).join('');
-
         var voicesHtml = a.voices.length
             ? '<div class="list">' + a.voices.map(function (v, i) {
                 return '<div class="row">' +
@@ -550,7 +545,6 @@
                 '<div class="eyebrow"><span class="qnum">' + (q.n < 10 ? '0' + q.n : q.n) + '</span> · Питання</div>' +
                 '<h2 class="qtitle">' + esc(q.title) + '</h2>' +
                 '<p class="help">' + esc(q.help) + '</p>' +
-                '<div class="chips">' + chips + '</div>' +
 
                 '<div class="block">' +
                     '<div class="block-label"><iconify-icon icon="solar:microphone-3-linear"></iconify-icon>Голосова відповідь</div>' +
