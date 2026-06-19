@@ -319,6 +319,34 @@
         </div>
     </section>
 
+    <!-- ============ COST LADDER (NEW · sourced) ============ -->
+    <section class="mt-4 lg:mt-5">
+        <div class="paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 md:p-12">
+            <div class="flex items-center gap-3 text-[11px] uppercase eyebrow text-stone-400 mb-6"><span class="w-1.5 h-1.5 rounded-full bg-[#E65C00]"></span> <span>Скільки це коштує насправді</span></div>
+            <h2 class="text-3xl md:text-5xl font-medium tracking-tight leading-[1.08] max-w-[22ch]"><span class="gsap-reveal block text-stone-900">Ринкові ціни —</span><span class="gsap-reveal block text-stone-400">і з Gelato.</span></h2>
+            <p class="text-sm md:text-base text-stone-500 mt-5 max-w-[64ch] leading-relaxed">Ми не пропонуємо одразу вкладати десятки тисяч. Спершу швидко й дешево перевіряємо ідею — і даємо живий продукт у руки якнайраніше. Ось реальні ринкові ціни (2026) поруч із нашими: <span class="text-stone-900 font-medium">прототип у нас ~10× дешевше за ринок</span>.</p>
+            <div class="mt-10 overflow-x-auto">
+                <table class="w-full min-w-[680px] border-separate border-spacing-0 text-sm">
+                    <thead>
+                        <tr class="text-left">
+                            <th class="py-4 px-4 font-medium text-stone-400 text-xs uppercase eyebrow">Етап</th>
+                            <th class="py-4 px-4 font-medium text-stone-500">Призначення</th>
+                            <th class="py-4 px-4 font-medium text-stone-500 text-center">Ринок · 2026</th>
+                            <th class="py-4 px-4 rounded-t-xl bg-gradient-to-b from-[#E65C00] to-[#FF7A2E] text-white font-medium text-center">З Gelato</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-stone-600">
+                        <tr><td class="py-4 px-4 font-medium text-stone-900 border-t border-stone-200/70">Прототип</td><td class="py-4 px-4 border-t border-stone-200/70">Показати ідею аудиторії та інвесторам</td><td class="py-4 px-4 text-center border-t border-stone-200/70">$2 000 – 10 000</td><td class="py-4 px-4 text-center bg-[#FFF8EF] border-t border-[#E65C00]/10 font-semibold text-stone-900">€500</td></tr>
+                        <tr><td class="py-4 px-4 font-medium text-stone-900 border-t border-stone-200/70">Proof of Concept</td><td class="py-4 px-4 border-t border-stone-200/70">Перевірити, чи працює технологія / AI</td><td class="py-4 px-4 text-center border-t border-stone-200/70">$5 000 – 20 000</td><td class="py-4 px-4 text-center bg-[#FFF8EF] border-t border-[#E65C00]/10 font-semibold text-stone-900">~€1 000</td></tr>
+                        <tr><td class="py-4 px-4 font-medium text-stone-900 border-t border-stone-200/70">MVP</td><td class="py-4 px-4 border-t border-stone-200/70">Перевірити, чи платитимуть за рішення</td><td class="py-4 px-4 text-center border-t border-stone-200/70">$15 000 – 150 000</td><td class="py-4 px-4 text-center bg-[#FFF8EF] border-t border-[#E65C00]/10 font-semibold text-stone-900">спринтами · від €500 / 2 тижні</td></tr>
+                        <tr><td class="py-4 px-4 font-medium text-stone-900 border-t border-stone-200/70">MLP</td><td class="py-4 px-4 border-t border-stone-200/70">Емоційний зв'язок і утримання</td><td class="py-4 px-4 text-center border-t border-stone-200/70">$50 000 – 200 000+</td><td class="py-4 px-4 text-center bg-[#FFF8EF] border-t border-[#E65C00]/10 font-semibold text-stone-900 rounded-b-xl">спринтами</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-[11px] text-stone-400 mt-4 leading-relaxed">Ринкові діапазони — за даними <a href="https://www.teacode.io/blog/mvp-development-costs" target="_blank" rel="noopener" class="underline hover:text-stone-600">TeaCode, «MVP Development Costs 2026»</a>. Прототип і Proof of Concept у Gelato — фіксована ціна; <span class="mvp" tabindex="0">MVP</span> та MLP — поетапно спринтами. Ринок у $, наші ціни в €.</p>
+        </div>
+    </section>
+
     <!-- ============ PROOF / TREND (NEW) ============ -->
     <section class="mt-4 lg:mt-5">
         <div class="paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 md:p-12">
@@ -383,13 +411,6 @@
         </div>
     </section>
 
-    <!-- video modal -->
-    <div id="vidModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-        <div class="relative w-full max-w-3xl">
-            <button id="vidClose" class="absolute -top-9 right-0 inline-flex items-center gap-1 text-white/80 hover:text-white text-sm"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon> Закрити</button>
-            <div class="aspect-video w-full rounded-xl overflow-hidden bg-black shadow-2xl"><iframe id="vidFrame" class="w-full h-full" src="" title="Відео історії" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
-        </div>
-    </div>
 
     <!-- ============ USE CASES (NEW) ============ -->
     <section class="mt-4 lg:mt-5">
@@ -732,6 +753,14 @@
     </footer>
 
 </main>
+
+    <!-- video modal -->
+    <div id="vidModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div class="relative w-full max-w-3xl">
+            <button id="vidClose" class="absolute -top-9 right-0 inline-flex items-center gap-1 text-white/80 hover:text-white text-sm"><iconify-icon icon="solar:close-circle-linear" width="20"></iconify-icon> Закрити</button>
+            <div class="aspect-video w-full rounded-xl overflow-hidden bg-black shadow-2xl"><iframe id="vidFrame" class="w-full h-full" src="" title="Відео історії" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
+        </div>
+    </div>
 
 <script src="assets/js/main.js?v=7"></script>
 </body>
