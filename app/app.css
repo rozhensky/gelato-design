@@ -164,16 +164,20 @@ h2.qtitle { font-size: 23px; line-height: 1.14; letter-spacing: -0.02em; color: 
 
 /* link adder */
 .adder { display: flex; gap: 8px; margin-top: 12px; }
+.link-field { position: relative; flex: 1; min-width: 0; }
+.link-field .lf-ic { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--t400); font-size: 18px; pointer-events: none; }
 .adder input {
-    flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 13px;
-    padding: 13px 14px; font-size: 14px; color: var(--t900); background: #fff; outline: none;
+    width: 100%; border: 1px solid var(--line); border-radius: 13px;
+    padding: 13px 14px 13px 40px; font-size: 14px; color: var(--t900); background: #fff; outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
 }
 .adder input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230,92,0,0.1); }
 .adder button {
-    flex-shrink: 0; border: none; border-radius: 13px; padding: 0 18px;
+    flex-shrink: 0; border: none; border-radius: 13px; padding: 0 16px;
     background: var(--dark); color: #fff; font-size: 14px; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
 }
+.adder button iconify-icon { font-size: 18px; }
 .adder button:active { background: #000; }
 
 /* ---------- per-question hint (e.g. Aura on Q8) ---------- */

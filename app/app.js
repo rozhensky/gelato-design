@@ -524,8 +524,8 @@
                     (wantsVideo ? 'Посилання та відео' : 'Посилання') + '</div>' +
                 linksHtml +
                 '<div class="adder">' +
-                    '<input id="linkInput" type="url" inputmode="url" placeholder="' + (wantsVideo ? 'Вставте посилання або відео…' : 'Вставте посилання…') + '">' +
-                    '<button id="linkAdd">Додати</button>' +
+                    '<div class="link-field"><iconify-icon icon="solar:link-linear" class="lf-ic"></iconify-icon><input id="linkInput" type="url" inputmode="url" placeholder="Вставте посилання"></div>' +
+                    '<button id="linkAdd"><iconify-icon icon="mdi:plus"></iconify-icon> Додати</button>' +
                 '</div>' +
             '</div>'
         ) : '';
