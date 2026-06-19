@@ -40,13 +40,14 @@ iconify-icon { --iconify-stroke-width: 1.5; }
 }
 
 /* ===================== MVP term tooltip ===================== */
+html, body { overflow-x: hidden; }
 .mvp { border-bottom: 1px dashed #E65C00; cursor: help; position: relative; white-space: nowrap; }
 .mvp::after {
     content: "MVP — це перша версія продукту з базовим набором функцій. Уже нею можна реально користуватися й отримати від продукту головну цінність — те, заради чого він і потрібен.";
     position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%) translateY(4px);
-    width: 250px; max-width: 72vw;
+    width: 230px; max-width: min(230px, 78vw);
     background: #23201D; color: #FDFBF7;
-    font-size: 12px; font-weight: 400; line-height: 1.45; letter-spacing: 0; text-transform: none; text-align: left;
+    font-size: 12px; font-weight: 400; line-height: 1.45; letter-spacing: 0; text-transform: none; text-align: left; white-space: normal;
     padding: 10px 12px; border-radius: 10px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
     opacity: 0; visibility: hidden; transition: opacity .18s ease, transform .18s ease; pointer-events: none; z-index: 50;
 }
