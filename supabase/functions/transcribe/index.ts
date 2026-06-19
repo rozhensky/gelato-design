@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     const form = new FormData();
     form.append("file", file, path.split("/").pop() || "audio.webm");
     form.append("model", "whisper-1");
-    form.append("language", "uk");
+    // no forced language → Whisper auto-detects and transcribes in the ORIGINAL language
     form.append("response_format", "json");
 
     const r = await fetch("https://api.openai.com/v1/audio/transcriptions", {
