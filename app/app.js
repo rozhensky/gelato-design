@@ -365,12 +365,6 @@
         haptic(); render();
         return true;
     }
-    function addAudioFile(qid, file) {
-        if (!file) return;
-        var clip = { id: uid(), blob: file, mime: file.type || 'audio/*', dur: 0, ts: Date.now() };
-        ansFor(qid).voices.push(clip);
-        persist(qid); syncVoice(qid, clip); haptic('ok'); render();
-    }
 
     /* ============================================================
        Rendering
@@ -442,8 +436,8 @@
             ? '<div class="list">' + a.voices.map(function (v, i) {
                 return '<div class="row">' +
                     '<button class="icon-btn" data-play data-clip="' + v.id + '"><iconify-icon icon="solar:play-bold"></iconify-icon></button>' +
-                    '<div class="meta"><span class="ln1">Голосова ' + (i + 1) + '</span>' +
-                    '<div class="ln2">' + (v.dur ? fmtTime(v.dur) : 'аудіофайл') + '</div></div>' +
+                    '<div class="meta"><span class="ln1">Запис #' + (i + 1) + '</span>' +
+                    '<div class="ln2">' + fmtTime(v.dur || 0) + '</div></div>' +
                     '<button class="del" data-delvoice="' + v.id + '"><iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon></button>' +
                 '</div>';
             }).join('') + '</div>'
@@ -489,7 +483,6 @@
                         '<div class="rec-hint" id="recHint">Натисніть, щоб записати голосову</div>' +
                     '</div>' +
                     voicesHtml +
-                    '<div class="file-fallback"><label>Або завантажити аудіофайл<input type="file" id="audioFile" accept="audio/*"></label></div>' +
                 '</div>' +
 
                 linkBlock +
@@ -503,7 +496,6 @@
 
         updateRecUI();
         $('#recBtn').onclick = function () { if (rec.active) stopRecording(false); else startRecording(qid); };
-        $('#audioFile').onchange = function (e) { addAudioFile(qid, e.target.files[0]); };
         document.querySelectorAll('[data-play]').forEach(function (b) {
             b.onclick = function () { togglePlay(qid, b.getAttribute('data-clip')); };
         });
