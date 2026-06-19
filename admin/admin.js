@@ -156,13 +156,15 @@
 
     current = { brief: brief, voices: voices, links: links, vByQ: vByQ, lByQ: lByQ };
 
-    var cinfo = [];
-    if (brief.contact_name) cinfo.push(["Імʼя", esc(brief.contact_name)]);
-    if (brief.email) cinfo.push(["Email", '<a href="mailto:' + esc(brief.email) + '">' + esc(brief.email) + "</a>"]);
-    if (brief.phone) cinfo.push(["Телефон", '<a href="tel:' + esc(brief.phone) + '">' + esc(brief.phone) + "</a>"]);
-    if (brief.socials) cinfo.push(["Соцмережі", esc(brief.socials)]);
-    if (brief.tg_username) cinfo.push(["Telegram", "@" + esc(brief.tg_username)]);
-    var contactHtml = cinfo.length ? ('<div class="contacts">' + cinfo.map(function (c) { return '<div class="crow"><span class="ck">' + c[0] + '</span><span class="cv">' + c[1] + "</span></div>"; }).join("") + "</div>") : "";
+    var dash = '<span class="muted">—</span>';
+    var cinfo = [
+      ["Імʼя", brief.contact_name ? esc(brief.contact_name) : dash],
+      ["Email", brief.email ? '<a href="mailto:' + esc(brief.email) + '">' + esc(brief.email) + "</a>" : dash],
+      ["Телефон", brief.phone ? '<a href="tel:' + esc(brief.phone) + '">' + esc(brief.phone) + "</a>" : dash],
+      ["Соцмережі", brief.socials ? esc(brief.socials) : dash],
+      ["Telegram", brief.tg_username ? "@" + esc(brief.tg_username) : dash],
+    ];
+    var contactHtml = '<div class="contacts">' + cinfo.map(function (c) { return '<div class="crow"><span class="ck">' + c[0] + '</span><span class="cv">' + c[1] + "</span></div>"; }).join("") + "</div>";
 
     var blocks = QTITLES.map(function (title, idx) {
       var n = idx + 1;
