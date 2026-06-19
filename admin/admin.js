@@ -180,8 +180,9 @@
       if (!confirm("Видалити цей бриф? Усі відповіді й аудіо зникнуть. Дію не можна скасувати.")) return;
       var paths = (current && current.voices ? current.voices : []).map(function (v) { return v.storage_path; }).filter(Boolean);
       if (paths.length) { try { await sb.storage.from("voices").remove(paths); } catch (e) {} }
-      var r = await sb.from("briefs").delete().eq("id", brief.id);
+      var r = await sb.from("briefs").delete().eq("id", brief.id).select();
       if (r.error) { toastMsg("Помилка: " + r.error.message); return; }
+      if (!r.data || !r.data.length) { toastMsg("Не вдалося видалити — застосуйте RLS-політику на delete у Supabase"); return; }
       toastMsg("Бриф видалено");
       renderList();
     };
