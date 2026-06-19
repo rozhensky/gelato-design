@@ -85,6 +85,12 @@
         var m = Math.floor(sec / 60), s = sec % 60;
         return m + ':' + (s < 10 ? '0' : '') + s;
     }
+    function plural(n, one, few, many) {
+        var d = n % 10, h = n % 100;
+        if (d === 1 && h !== 11) return one;
+        if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return few;
+        return many;
+    }
     function prettyUrl(u) {
         try { var x = new URL(u); return x.hostname.replace(/^www\./, '') + (x.pathname.length > 1 ? x.pathname : ''); }
         catch (e) { return u; }
@@ -524,11 +530,11 @@
         var items = QUESTIONS.map(function (q, i) {
             var qid = 'q' + q.n, a = ansFor(qid), ok = isAnswered(qid);
             var bits = [];
-            if (a.voices.length) bits.push(a.voices.length + ' голос.');
-            if (a.links.length) bits.push(a.links.length + ' посил.');
+            if (a.voices.length) bits.push(a.voices.length + ' ' + plural(a.voices.length, 'запис', 'записи', 'записів'));
+            if (a.links.length) bits.push(a.links.length + ' ' + plural(a.links.length, 'посилання', 'посилання', 'посилань'));
             var sub = bits.length ? bits.join(' · ') : 'Ще не заповнено';
             return '<button class="rev-item" data-go="' + i + '">' +
-                '<span class="rev-badge ' + (ok ? 'done' : 'todo') + '">' + (ok ? '<iconify-icon icon="solar:check-bold" style="font-size:15px"></iconify-icon>' : q.n) + '</span>' +
+                '<span class="rev-badge ' + (ok ? 'done' : 'todo') + '">' + (ok ? '<iconify-icon icon="mdi:check-bold" width="16"></iconify-icon>' : q.n) + '</span>' +
                 '<span class="rev-main"><span class="rt">' + esc(q.title) + '</span><span class="rs">' + sub + '</span></span>' +
                 '<span class="go"><iconify-icon icon="solar:pen-2-linear"></iconify-icon></span>' +
             '</button>';
