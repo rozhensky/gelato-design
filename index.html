@@ -48,18 +48,6 @@
       }
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {"@type":"Question","name":"Це ж все одно дорого?","acceptedAnswer":{"@type":"Answer","text":"Доступ — це підписка від €100/місяць, що дозволяє розробляти ваш продукт. Хочете зробити все самі й спробувати — будь ласка, сьогодні це доступно кожному. А якщо хочете делегувати тим, хто розуміє, як будуються продукти, — усі витрати на розробку беремо на себе."}},
-        {"@type":"Question","name":"Я не шарю в технологіях","acceptedAnswer":{"@type":"Answer","text":"І не треба. Ви говорите голосом про свою ідею — яку технічну форму обрати, вирішуємо ми."}},
-        {"@type":"Question","name":"А раптом зроблять не те?","acceptedAnswer":{"@type":"Answer","text":"Ви бачите стратегію й бачення продукту на сесії за €100 — ще до оплати реалізації. Розбіжності закриваємо там."}},
-        {"@type":"Question","name":"Це ж просто AI — я сам зроблю за вечір","acceptedAnswer":{"@type":"Answer","text":"Так, AI доступний усім — можете спробувати самі, ми не заперечуємо. Але ключова цінність — у продуктовій експертизі з багатьох компонентів: як саме клієнт користуватиметься продуктом, які функції потрібні, а що не варто робити одразу, і яка технічна складова за всім цим стоїть. AI — інструмент, а не рішення, що з ним робити."}}
-      ]
-    }
-    </script>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4 md:p-8 lg:p-10 text-stone-800" style="background-color:#EFECE5; background-image: radial-gradient(circle at 50% 0%, #F8F5EF 0%, transparent 70%);">
 
@@ -74,8 +62,6 @@
         <nav class="hidden md:flex items-center gap-6 text-xs font-medium text-stone-500">
             <a href="#process" class="hover:text-stone-900 transition-colors">Як працює</a>
             <a href="#offer" class="hover:text-stone-900 transition-colors">Офер</a>
-            <a href="#compare" class="hover:text-stone-900 transition-colors">Порівняння</a>
-            <a href="#faq" class="hover:text-stone-900 transition-colors">Питання</a>
         </nav>
         <a href="https://t.me/gelato_design_bot" class="inline-flex items-center gap-1.5 bg-[#E65C00] text-white text-xs px-4 py-2 rounded-full font-medium hover:bg-[#CC5200] transition-all shadow-[0_2px_10px_rgba(230,92,0,0.2)] hover:shadow-[0_4px_14px_rgba(230,92,0,0.3)]"><iconify-icon icon="solar:plain-2-bold" width="14"></iconify-icon> Розповісти ідею</a>
     </header>
@@ -549,6 +535,21 @@
         </div>
     </section>
 
+    <!-- ============ OFFER / PRICING ============ -->
+    <section id="offer" class="mt-4 lg:mt-5">
+        <div class="paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 md:p-12">
+            <div class="flex items-center gap-3 text-[11px] uppercase eyebrow text-stone-400 mb-6"><span class="font-medium text-[#E65C00]">10</span> <span>Офер</span></div>
+            <h2 class="text-3xl md:text-5xl font-medium tracking-tight leading-[1.08]"><span class="gsap-reveal block text-stone-900">Прозорі кроки</span></h2>
+            <p class="text-sm md:text-base text-stone-500 mt-5 max-w-[52ch] leading-relaxed">Розбито на кроки, щоб ви не вкладали великі гроші наосліп. Фінальна ціна залежить від обсягу функціоналу.</p>
+            <div class="grid md:grid-cols-3 gap-4 mt-10">
+                <div class="bg-[#FDFBF7] rounded-xl p-7 ring-1 ring-stone-200/60 flex flex-col"><span class="text-[10px] uppercase eyebrow text-stone-400">Крок 1</span><div class="text-4xl font-medium tracking-tight text-stone-900 mt-4">€100</div><h3 class="font-medium mt-4 text-stone-900">Стратегічна сесія</h3><p class="text-sm text-stone-500 mt-2 leading-relaxed flex-grow">До 2 годин: розбір ідеї, вибір формату, ключові функції. На виході — підписана угода про обсяг із фіксованим переліком того, що входить.</p></div>
+                <div class="bg-gradient-to-br from-[#E65C00] to-[#FF8C40] rounded-xl p-7 flex flex-col text-white shadow-[0_8px_24px_rgba(230,92,0,0.25)]"><span class="text-[10px] uppercase eyebrow text-white/80">Крок 2 · 7 днів</span><div class="text-4xl font-medium tracking-tight mt-4">€500</div><h3 class="font-medium mt-4">Живий прототип за 7 днів</h3><p class="text-sm text-white/85 mt-2 leading-relaxed flex-grow">Живий інтерактивний прототип, який можна відчути й показати. Повна власність коду й дизайну переходить вам.</p></div>
+                <div class="bg-[#FDFBF7] rounded-xl p-7 ring-1 ring-stone-200/60 flex flex-col"><span class="text-[10px] uppercase eyebrow text-stone-400">Далі · 2 тижні</span><div class="text-4xl font-medium tracking-tight text-stone-900 mt-4">від €500</div><h3 class="font-medium mt-4 text-stone-900">Реалізація <span class="mvp" tabindex="0">MVP</span> · спринти</h3><p class="text-sm text-stone-500 mt-2 leading-relaxed flex-grow">Перетворюємо прототип на повноцінний <span class="mvp" tabindex="0">MVP</span> фіксованими спринтами: узгоджений перелік задач на кожен, а не «скільки встигнемо».</p></div>
+            </div>
+            <div class="mt-6 flex items-start gap-4 bg-[#FFF5E6] rounded-xl p-6 ring-1 ring-[#E65C00]/15"><iconify-icon icon="solar:shield-check-linear" width="24" class="text-[#E65C00] shrink-0 mt-0.5"></iconify-icon><p class="text-sm leading-relaxed text-stone-700"><span class="font-medium text-stone-900">Без ризику вкласти наосліп.</span> За €100 ви отримуєте стратегію й бачення продукту — і лише потім вирішуєте, чи платити за реалізацію.</p></div>
+        </div>
+    </section>
+
     <!-- ============ SCOPE (NEW · in/out) ============ -->
     <section class="mt-4 lg:mt-5">
         <div class="paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 md:p-12">
@@ -577,21 +578,6 @@
                     </ul>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- ============ OFFER / PRICING ============ -->
-    <section id="offer" class="mt-4 lg:mt-5">
-        <div class="paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 md:p-12">
-            <div class="flex items-center gap-3 text-[11px] uppercase eyebrow text-stone-400 mb-6"><span class="font-medium text-[#E65C00]">10</span> <span>Офер</span></div>
-            <h2 class="text-3xl md:text-5xl font-medium tracking-tight leading-[1.08]"><span class="gsap-reveal block text-stone-900">Прозоро. Від €500.</span></h2>
-            <p class="text-sm md:text-base text-stone-500 mt-5 max-w-[52ch] leading-relaxed">Розбито на кроки, щоб ви не вкладали великі гроші наосліп. Фінальна ціна залежить від обсягу функціоналу.</p>
-            <div class="grid md:grid-cols-3 gap-4 mt-10">
-                <div class="bg-[#FDFBF7] rounded-xl p-7 ring-1 ring-stone-200/60 flex flex-col"><span class="text-[10px] uppercase eyebrow text-stone-400">Крок 1</span><div class="text-4xl font-medium tracking-tight text-stone-900 mt-4">€100</div><h3 class="font-medium mt-4 text-stone-900">Стратегічна сесія</h3><p class="text-sm text-stone-500 mt-2 leading-relaxed flex-grow">До 2 годин: розбір ідеї, вибір формату, ключові функції. На виході — підписана угода про обсяг із фіксованим переліком того, що входить.</p></div>
-                <div class="bg-gradient-to-br from-[#E65C00] to-[#FF8C40] rounded-xl p-7 flex flex-col text-white shadow-[0_8px_24px_rgba(230,92,0,0.25)]"><span class="text-[10px] uppercase eyebrow text-white/80">Крок 2 · 7 днів</span><div class="text-4xl font-medium tracking-tight mt-4">€500</div><h3 class="font-medium mt-4">Живий прототип за 7 днів</h3><p class="text-sm text-white/85 mt-2 leading-relaxed flex-grow">Живий інтерактивний прототип, який можна відчути й показати. Повна власність коду й дизайну переходить вам.</p></div>
-                <div class="bg-[#FDFBF7] rounded-xl p-7 ring-1 ring-stone-200/60 flex flex-col"><span class="text-[10px] uppercase eyebrow text-stone-400">Далі · 2 тижні</span><div class="text-4xl font-medium tracking-tight text-stone-900 mt-4">від €500</div><h3 class="font-medium mt-4 text-stone-900">Реалізація <span class="mvp" tabindex="0">MVP</span> · спринти</h3><p class="text-sm text-stone-500 mt-2 leading-relaxed flex-grow">Перетворюємо прототип на повноцінний <span class="mvp" tabindex="0">MVP</span> фіксованими спринтами: узгоджений перелік задач на кожен, а не «скільки встигнемо».</p></div>
-            </div>
-            <div class="mt-6 flex items-start gap-4 bg-[#FFF5E6] rounded-xl p-6 ring-1 ring-[#E65C00]/15"><iconify-icon icon="solar:shield-check-linear" width="24" class="text-[#E65C00] shrink-0 mt-0.5"></iconify-icon><p class="text-sm leading-relaxed text-stone-700"><span class="font-medium text-stone-900">Без ризику вкласти наосліп.</span> За €100 ви отримуєте стратегію й бачення продукту — і лише потім вирішуєте, чи платити за реалізацію.</p></div>
         </div>
     </section>
 
@@ -641,40 +627,9 @@
             <div class="flex items-center gap-3 text-[11px] uppercase eyebrow text-stone-400 mb-6"><span class="font-medium text-[#E65C00]">12</span> <span>Стратегічні послуги</span></div>
             <h2 class="text-3xl md:text-5xl font-medium tracking-tight leading-[1.08] max-w-[22ch]"><span class="gsap-reveal block text-stone-900">Ми думаємо про запуск,</span><span class="gsap-reveal block text-stone-400 text-xl md:text-3xl leading-tight mt-1">а не лише про розробку</span></h2>
             <p class="text-sm md:text-base text-stone-500 mt-5 max-w-[58ch] leading-relaxed">Окрім самого продукту, можемо підсилити запуск стратегією. Це окремі послуги — підключаємо за потреби, під вашу ціль.</p>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
-                <div class="bg-[#FDFBF7] rounded-xl p-7 ring-1 ring-stone-200/60 relative"><span class="absolute top-5 right-5 text-[10px] uppercase eyebrow text-[#E65C00]">Послуга</span><div class="w-10 h-10 rounded-full bg-[#FFF5E6] flex items-center justify-center text-[#E65C00] ring-1 ring-[#E65C00]/10 mb-5"><iconify-icon icon="solar:rocket-linear" width="20"></iconify-icon></div><h3 class="font-medium text-lg tracking-tight mb-2 text-stone-900">Стратегія просування</h3><p class="text-sm text-stone-500 leading-relaxed">Go-to-market план: канали, меседжі й послідовність кроків, щоб перший запуск спрацював.</p></div>
-                <div class="bg-[#FDFBF7] rounded-xl p-7 ring-1 ring-stone-200/60 relative"><span class="absolute top-5 right-5 text-[10px] uppercase eyebrow text-[#E65C00]">Послуга</span><div class="w-10 h-10 rounded-full bg-[#FFF5E6] flex items-center justify-center text-[#E65C00] ring-1 ring-[#E65C00]/10 mb-5"><iconify-icon icon="solar:graph-up-linear" width="20"></iconify-icon></div><h3 class="font-medium text-lg tracking-tight mb-2 text-stone-900">Швидке зростання аудиторії</h3><p class="text-sm text-stone-500 leading-relaxed">Як залучати й утримувати аудиторію: гіпотези, експерименти росту й воронки.</p></div>
-                <div class="bg-[#FDFBF7] rounded-xl p-7 ring-1 ring-stone-200/60 relative"><span class="absolute top-5 right-5 text-[10px] uppercase eyebrow text-[#E65C00]">Послуга</span><div class="w-10 h-10 rounded-full bg-[#FFF5E6] flex items-center justify-center text-[#E65C00] ring-1 ring-[#E65C00]/10 mb-5"><iconify-icon icon="solar:clipboard-check-linear" width="20"></iconify-icon></div><h3 class="font-medium text-lg tracking-tight mb-2 text-stone-900">Перевірка на аудиторії</h3><p class="text-sm text-stone-500 leading-relaxed">Через список очікування перевіряємо, які функції реально потрібні — до того, як вкладати час.</p></div>
-                <div class="bg-[#FDFBF7] rounded-xl p-7 ring-1 ring-stone-200/60 relative"><span class="absolute top-5 right-5 text-[10px] uppercase eyebrow text-[#E65C00]">Послуга</span><div class="w-10 h-10 rounded-full bg-[#FFF5E6] flex items-center justify-center text-[#E65C00] ring-1 ring-[#E65C00]/10 mb-5"><iconify-icon icon="solar:hand-money-linear" width="20"></iconify-icon></div><h3 class="font-medium text-lg tracking-tight mb-2 text-stone-900">Залучення інвестицій</h3><p class="text-sm text-stone-500 leading-relaxed">Як підготувати продукт і презентацію так, щоб під нього знайшлися кошти.</p></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============ COMPARISON (NEW) ============ -->
-    <section id="compare" class="mt-4 lg:mt-5">
-        <div class="paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 md:p-12">
-            <div class="flex items-center gap-3 text-[11px] uppercase eyebrow text-stone-400 mb-6"><span class="font-medium text-[#E65C00]">13</span> <span>Порівняння</span></div>
-            <h2 class="text-3xl md:text-5xl font-medium tracking-tight leading-[1.08] max-w-[20ch]"><span class="gsap-reveal block text-stone-900">Чому не фрілансер,</span><span class="gsap-reveal block text-stone-400 text-xl md:text-3xl leading-tight mt-1">агенція чи конструктор</span></h2>
-            <div class="mt-10 overflow-x-auto">
-                <table class="w-full min-w-[640px] border-separate border-spacing-0 text-sm">
-                    <thead>
-                        <tr class="text-left">
-                            <th class="py-4 px-4 font-medium text-stone-400 text-xs uppercase eyebrow"></th>
-                            <th class="py-4 px-4 rounded-t-xl bg-gradient-to-b from-[#E65C00] to-[#FF7A2E] text-white font-medium text-center">Gelato</th>
-                            <th class="py-4 px-4 font-medium text-stone-500 text-center">Фрілансер</th>
-                            <th class="py-4 px-4 font-medium text-stone-500 text-center">Агенція</th>
-                            <th class="py-4 px-4 font-medium text-stone-500 text-center">Ноукод-конструктор</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-stone-600">
-                        <tr><td class="py-4 px-4 font-medium text-stone-900 border-t border-stone-200/70">Швидкість до прототипу</td><td class="py-4 px-4 text-center bg-[#FFF8EF] border-t border-[#E65C00]/10 font-medium text-stone-900">7 днів</td><td class="py-4 px-4 text-center border-t border-stone-200/70">Тижні</td><td class="py-4 px-4 text-center border-t border-stone-200/70">Місяці</td><td class="py-4 px-4 text-center border-t border-stone-200/70">Як вийде</td></tr>
-                        <tr><td class="py-4 px-4 font-medium text-stone-900 border-t border-stone-200/70">Вхід</td><td class="py-4 px-4 text-center bg-[#FFF8EF] border-t border-[#E65C00]/10 font-medium text-stone-900">€100 (старт)</td><td class="py-4 px-4 text-center border-t border-stone-200/70">Різний</td><td class="py-4 px-4 text-center border-t border-stone-200/70">Високий</td><td class="py-4 px-4 text-center border-t border-stone-200/70">Підписка</td></tr>
-                        <tr><td class="py-4 px-4 font-medium text-stone-900 border-t border-stone-200/70">Хто визначає форму продукту</td><td class="py-4 px-4 text-center bg-[#FFF8EF] border-t border-[#E65C00]/10 font-medium text-stone-900">Ми з вами</td><td class="py-4 px-4 text-center border-t border-stone-200/70 text-stone-400">Ви</td><td class="py-4 px-4 text-center border-t border-stone-200/70 text-stone-400">Ви</td><td class="py-4 px-4 text-center border-t border-stone-200/70 text-stone-400">Ви</td></tr>
-                        <tr><td class="py-4 px-4 font-medium text-stone-900 border-t border-stone-200/70">Продуктова стратегія</td><td class="py-4 px-4 text-center bg-[#FFF8EF] border-t border-[#E65C00]/10"><iconify-icon icon="solar:check-circle-bold" width="20" class="text-[#E65C00]"></iconify-icon></td><td class="py-4 px-4 text-center border-t border-stone-200/70"><iconify-icon icon="solar:close-circle-linear" width="20" class="text-stone-300"></iconify-icon></td><td class="py-4 px-4 text-center border-t border-stone-200/70">Доплата</td><td class="py-4 px-4 text-center border-t border-stone-200/70"><iconify-icon icon="solar:close-circle-linear" width="20" class="text-stone-300"></iconify-icon></td></tr>
-                        <tr><td class="py-4 px-4 font-medium text-stone-900 border-t border-stone-200/70">Власність коду</td><td class="py-4 px-4 text-center bg-[#FFF8EF] border-t border-[#E65C00]/10"><iconify-icon icon="solar:check-circle-bold" width="20" class="text-[#E65C00]"></iconify-icon></td><td class="py-4 px-4 text-center border-t border-stone-200/70">Залежить</td><td class="py-4 px-4 text-center border-t border-stone-200/70">За домовленістю</td><td class="py-4 px-4 text-center border-t border-stone-200/70 text-stone-400">Прив'язка</td></tr>
-                        <tr><td class="py-4 px-4 font-medium text-stone-900 border-t border-stone-200/70 rounded-bl-xl">Ризик передоплати</td><td class="py-4 px-4 text-center bg-[#FFF8EF] border-t border-[#E65C00]/10 font-medium text-stone-900">Мінімальний</td><td class="py-4 px-4 text-center border-t border-stone-200/70">Високий</td><td class="py-4 px-4 text-center border-t border-stone-200/70">Високий</td><td class="py-4 px-4 text-center border-t border-stone-200/70">Низький</td></tr>
-                    </tbody>
-                </table>
+            <div class="grid sm:grid-cols-2 gap-4 mt-10">
+                <div class="bg-[#FDFBF7] rounded-xl p-7 ring-1 ring-stone-200/60 relative flex flex-col"><span class="absolute top-5 right-5 text-[10px] uppercase eyebrow text-[#E65C00]">Послуга</span><div class="w-10 h-10 rounded-full bg-[#FFF5E6] flex items-center justify-center text-[#E65C00] ring-1 ring-[#E65C00]/10 mb-5"><iconify-icon icon="solar:rocket-linear" width="20"></iconify-icon></div><h3 class="font-medium text-lg tracking-tight mb-2 text-stone-900">Стратегія просування</h3><p class="text-sm text-stone-500 leading-relaxed flex-grow">Go-to-market і зростання: канали, меседжі та послідовність кроків, щоб залучати й утримувати аудиторію — гіпотези, експерименти росту й воронки.</p><div class="mt-6 self-start inline-flex items-center text-sm font-semibold text-[#E65C00] bg-[#FFF5E6] ring-1 ring-[#E65C00]/15 rounded-full px-3.5 py-1.5">від €1 000</div></div>
+                <div class="bg-[#FDFBF7] rounded-xl p-7 ring-1 ring-stone-200/60 relative flex flex-col"><span class="absolute top-5 right-5 text-[10px] uppercase eyebrow text-[#E65C00]">Послуга</span><div class="w-10 h-10 rounded-full bg-[#FFF5E6] flex items-center justify-center text-[#E65C00] ring-1 ring-[#E65C00]/10 mb-5"><iconify-icon icon="solar:hand-money-linear" width="20"></iconify-icon></div><h3 class="font-medium text-lg tracking-tight mb-2 text-stone-900">Стратегія залучення інвестицій</h3><p class="text-sm text-stone-500 leading-relaxed flex-grow">Як підготувати продукт і презентацію так, щоб під нього знайшлися кошти.</p><div class="mt-6 self-start inline-flex items-center text-sm font-semibold text-[#E65C00] bg-[#FFF5E6] ring-1 ring-[#E65C00]/15 rounded-full px-3.5 py-1.5">від €1 000</div></div>
             </div>
         </div>
     </section>
@@ -737,20 +692,6 @@
                     <div class="text-[11px] uppercase eyebrow text-[#CFC7BC] mt-1">відкриті місця</div>
                     
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============ FAQ ============ -->
-    <section id="faq" class="mt-4 lg:mt-5">
-        <div class="paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 md:p-12">
-            <div class="flex items-center gap-3 text-[11px] uppercase eyebrow text-stone-400 mb-6"><span class="font-medium text-[#E65C00]">16</span> <span>Питання</span></div>
-            <h2 class="text-3xl md:text-5xl font-medium tracking-tight leading-[1.08] mb-10"><span class="gsap-reveal block text-stone-900">Чесні відповіді</span></h2>
-            <div id="faq-list" class="divide-y divide-stone-200/70 border-y border-stone-200/70">
-                <details class="group"><summary class="flex items-center justify-between gap-4 py-5 cursor-pointer list-none"><span class="font-medium text-stone-900 pr-4">Це ж все одно дорого?</span><iconify-icon icon="solar:add-circle-linear" width="22" class="text-stone-400 shrink-0 transition-transform group-open:rotate-45"></iconify-icon></summary><p class="pb-5 -mt-1 text-sm text-stone-500 leading-relaxed">Доступ — це підписка від €100/місяць, що дозволяє розробляти ваш продукт. Хочете зробити все самі й спробувати — будь ласка, сьогодні це доступно кожному. А якщо хочете делегувати тим, хто розуміє, як будуються продукти, — усі витрати на розробку беремо на себе.</p></details>
-                <details class="group"><summary class="flex items-center justify-between gap-4 py-5 cursor-pointer list-none"><span class="font-medium text-stone-900 pr-4">Я не шарю в технологіях</span><iconify-icon icon="solar:add-circle-linear" width="22" class="text-stone-400 shrink-0 transition-transform group-open:rotate-45"></iconify-icon></summary><p class="pb-5 -mt-1 text-sm text-stone-500 leading-relaxed">І не треба. Ви просто говорите голосом про свою ідею — яку технічну форму обрати (додаток, бот, телеграм-апп чи сайт) вирішуємо ми.</p></details>
-                <details class="group"><summary class="flex items-center justify-between gap-4 py-5 cursor-pointer list-none"><span class="font-medium text-stone-900 pr-4">А раптом зроблять не те?</span><iconify-icon icon="solar:add-circle-linear" width="22" class="text-stone-400 shrink-0 transition-transform group-open:rotate-45"></iconify-icon></summary><p class="pb-5 -mt-1 text-sm text-stone-500 leading-relaxed">Ви бачите стратегію й підписуєте угоду про обсяг на сесії за €100 — ще до оплати реалізації. Що саме входить, узгоджено наперед, тож розбіжності закриваємо там. А далі — 2 раунди правок у межах цього обсягу.</p></details>
-                <details class="group"><summary class="flex items-center justify-between gap-4 py-5 cursor-pointer list-none"><span class="font-medium text-stone-900 pr-4">Це ж просто AI — я сам зроблю за вечір</span><iconify-icon icon="solar:add-circle-linear" width="22" class="text-stone-400 shrink-0 transition-transform group-open:rotate-45"></iconify-icon></summary><p class="pb-5 -mt-1 text-sm text-stone-500 leading-relaxed">Так, AI доступний усім — можете спробувати самі, ми не заперечуємо. Але ключова цінність — у продуктовій експертизі, що складається з багатьох компонентів: як саме клієнт користуватиметься продуктом, які функції потрібні, а що не варто робити одразу, і яка технічна складова за всім цим стоїть. AI — інструмент, а не рішення, що з ним робити.</p></details>
             </div>
         </div>
     </section>
