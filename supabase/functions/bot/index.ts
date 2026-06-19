@@ -33,8 +33,10 @@ Deno.serve(async (req) => {
       if (got !== WEBHOOK_SECRET) return new Response("forbidden", { status: 403 });
     }
     const update = await req.json();
-    const msg = update.message || update.edited_message;
-    if (msg && msg.chat && msg.chat.id) {
+    const msg = update.message;
+    const text = (msg && typeof msg.text === "string") ? msg.text.trim() : "";
+    // reply ONLY to /start — avoids greeting on every message
+    if (msg && msg.chat && msg.chat.id && text.startsWith("/start")) {
       await tg("sendMessage", {
         chat_id: msg.chat.id,
         text: WELCOME,
