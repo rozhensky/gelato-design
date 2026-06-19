@@ -251,54 +251,24 @@
     </section>
 
     <!-- ============ SOLUTION ============ -->
-    <section class="mt-4 lg:mt-5 grid grid-cols-12 gap-4 lg:gap-5">
-        <div class="col-span-12 lg:col-span-7 paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 md:p-12 relative overflow-hidden">
+    <section class="mt-4 lg:mt-5 grid grid-cols-12 gap-4 lg:gap-5 items-stretch">
+        <div class="col-span-12 lg:col-span-7 paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 md:p-12 relative overflow-hidden flex flex-col justify-center">
             <div class="gsap-blob absolute -bottom-24 -right-20 w-80 h-80 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#FFD6AD] to-transparent opacity-40 mix-blend-multiply blur-[55px] pointer-events-none"></div>
             <div class="relative z-10">
                 <div class="flex items-center gap-3 text-[11px] uppercase eyebrow text-stone-400 mb-6"><span class="font-medium text-[#E65C00]">02</span> <span>Рішення</span></div>
                 <h2 class="text-3xl md:text-5xl font-medium tracking-tight leading-[1.08] max-w-[16ch]"><span class="gsap-reveal block text-stone-900">Ви приносите ідею.</span><span class="gsap-reveal block text-stone-400">Ми даємо відчути її живою.</span></h2>
                 <p class="text-sm md:text-base text-stone-500 mt-6 leading-relaxed max-w-[46ch]">Світ змінився: AI дозволяє запускати продукти швидше й дешевше, ніж будь-коли. Ми не приховуємо, що використовуємо його — це й робить ціну доступною. Але AI не знає, <span class="text-stone-900 font-medium">яким</span> має бути ваш продукт. Тому ми не «робимо що завгодно» — ми <span class="text-stone-900 font-medium">беремо ваше бачення і вкладаємо його в перевірений формат</span> із чітким обсягом. Саме це дає швидкість і передбачуваність.</p>
-                <p class="text-[11px] uppercase eyebrow text-stone-400 mt-8 mb-4">AI прискорює — головне беремо на себе ми</p>
-                <div class="grid sm:grid-cols-3 gap-3">
-                    <div class="bg-[#FDFBF7] rounded-xl p-5 ring-1 ring-stone-200/60"><iconify-icon icon="solar:lightbulb-bolt-linear" width="20" class="text-[#E65C00]"></iconify-icon><h3 class="font-medium text-sm tracking-tight mt-3 mb-1 text-stone-900">Глибше розуміння задачі</h3><p class="text-[13px] text-stone-500 leading-relaxed">Що насправді потрібно вашим користувачам — і чого не варто робити одразу.</p></div>
-                    <div class="bg-[#FDFBF7] rounded-xl p-5 ring-1 ring-stone-200/60"><iconify-icon icon="solar:layers-minimalistic-linear" width="20" class="text-[#E65C00]"></iconify-icon><h3 class="font-medium text-sm tracking-tight mt-3 mb-1 text-stone-900">Технічна структура продукту</h3><p class="text-[13px] text-stone-500 leading-relaxed">Архітектура, що витримає, коли прийдуть перші реальні люди.</p></div>
-                    <div class="bg-[#FDFBF7] rounded-xl p-5 ring-1 ring-stone-200/60"><iconify-icon icon="solar:routing-2-linear" width="20" class="text-[#E65C00]"></iconify-icon><h3 class="font-medium text-sm tracking-tight mt-3 mb-1 text-stone-900">Шлях користувача</h3><p class="text-[13px] text-stone-500 leading-relaxed">Як саме людина користується продуктом — крок за кроком, до результату.</p></div>
-                </div>
             </div>
         </div>
-        <div class="col-span-12 lg:col-span-5 paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 flex flex-col">
-            <div class="flex-1 flex items-center justify-center py-2 min-h-[200px]">
-                <svg viewBox="0 0 360 230" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full max-w-[340px] h-auto" role="img" aria-label="Ідея в голові перетворюється на живий прототип">
-                    <defs>
-                        <linearGradient id="bsScr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E65C00"/><stop offset="1" stop-color="#FF8C40"/></linearGradient>
-                        <radialGradient id="bsGlow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFD6AD" stop-opacity=".75"/><stop offset="1" stop-color="#FFD6AD" stop-opacity="0"/></radialGradient>
-                    </defs>
-                    <ellipse cx="246" cy="120" rx="104" ry="104" fill="url(#bsGlow)"/>
-                    <g opacity=".6">
-                        <ellipse cx="70" cy="74" rx="36" ry="25" fill="#EFEAE1" stroke="#D8D2C6" stroke-width="2"/>
-                        <circle cx="70" cy="70" r="11" fill="#E7E1D6" stroke="#CFC8BA" stroke-width="2"/>
-                        <rect x="66" y="80" width="8" height="5" rx="2" fill="#CFC8BA"/>
-                        <circle cx="40" cy="100" r="4" fill="#E2DBCF"/><circle cx="29" cy="111" r="2.5" fill="#E2DBCF"/>
-                    </g>
-                    <path d="M104 92 C150 120 168 98 196 112" stroke="#E65C00" stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round" opacity=".55"/>
-                    <path d="M189 106 l9 6 -8 6" stroke="#E65C00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
-                    <g>
-                        <rect x="202" y="48" width="112" height="152" rx="22" fill="#FCFAF6" stroke="#23201D" stroke-width="4"/>
-                        <rect x="228" y="54" width="60" height="7" rx="3.5" fill="#23201D"/>
-                        <rect x="212" y="70" width="92" height="46" rx="11" fill="url(#bsScr)"/>
-                        <circle cx="236" cy="93" r="12" fill="#fff"/><path d="M232 87 l9 6 -9 6 z" fill="#E65C00"/>
-                        <rect x="254" y="86" width="42" height="6" rx="3" fill="#fff" opacity=".85"/><rect x="254" y="97" width="30" height="6" rx="3" fill="#fff" opacity=".55"/>
-                        <rect x="212" y="126" width="92" height="9" rx="4.5" fill="#F0EAE0"/><rect x="212" y="141" width="66" height="9" rx="4.5" fill="#F0EAE0"/><rect x="212" y="156" width="80" height="9" rx="4.5" fill="#F0EAE0"/>
-                        <rect x="212" y="176" width="92" height="16" rx="8" fill="#FFE6D2"/>
-                    </g>
-                    <g fill="#E65C00"><path d="M326 76 l2.6 6.4 6.4 2.6 -6.4 2.6 -2.6 6.4 -2.6 -6.4 -6.4 -2.6 6.4 -2.6 z" opacity=".85"/><circle cx="320" cy="152" r="3" opacity=".5"/><circle cx="188" cy="150" r="3.5" opacity=".5"/></g>
-                </svg>
+        <div class="col-span-12 lg:col-span-5 paper-card ring-1 ring-stone-200/50 rounded-2xl p-8 flex flex-col justify-center">
+            <p class="text-[11px] uppercase eyebrow text-stone-400 mb-4">AI прискорює — головне беремо на себе ми</p>
+            <div class="flex flex-col gap-3">
+                <div class="flex items-start gap-3 bg-[#FDFBF7] rounded-xl p-5 ring-1 ring-stone-200/60"><iconify-icon icon="solar:lightbulb-bolt-linear" width="22" class="text-[#E65C00] shrink-0 mt-0.5"></iconify-icon><div><h3 class="font-medium text-sm tracking-tight mb-1 text-stone-900">Глибше розуміння задачі</h3><p class="text-[13px] text-stone-500 leading-relaxed">Що насправді потрібно вашим користувачам — і чого не варто робити одразу.</p></div></div>
+                <div class="flex items-start gap-3 bg-[#FDFBF7] rounded-xl p-5 ring-1 ring-stone-200/60"><iconify-icon icon="solar:layers-minimalistic-linear" width="22" class="text-[#E65C00] shrink-0 mt-0.5"></iconify-icon><div><h3 class="font-medium text-sm tracking-tight mb-1 text-stone-900">Технічна структура продукту</h3><p class="text-[13px] text-stone-500 leading-relaxed">Архітектура, що витримає, коли прийдуть перші реальні люди.</p></div></div>
+                <div class="flex items-start gap-3 bg-[#FDFBF7] rounded-xl p-5 ring-1 ring-stone-200/60"><iconify-icon icon="solar:routing-2-linear" width="22" class="text-[#E65C00] shrink-0 mt-0.5"></iconify-icon><div><h3 class="font-medium text-sm tracking-tight mb-1 text-stone-900">Шлях користувача</h3><p class="text-[13px] text-stone-500 leading-relaxed">Як саме людина користується продуктом — крок за кроком, до результату.</p></div></div>
             </div>
-            <div class="pb-6 border-b border-stone-200/70"><span class="text-[12px] uppercase eyebrow text-stone-400 font-medium">Було</span><p class="text-stone-500 text-base mt-2 leading-relaxed">Ідея жила в голові роками. Натхнення — є, а інструмента, щоб втілити, — немає. І вона так і лишалась мрією.</p></div>
-            <div class="pt-6"><span class="text-[12px] uppercase eyebrow text-[#E65C00] font-medium">Стало</span><p class="text-stone-900 text-lg mt-2 leading-snug font-medium">За тиждень — живий прототип на екрані. Той самий, що тримаєте в руках і показуєте аудиторії та інвесторам.</p></div>
         </div>
     </section>
-
     <!-- ============ COST OF DELAY (NEW · market trigger) ============ -->
     <section class="mt-4 lg:mt-5">
         <div class="bg-gradient-to-br from-[#2A2520] to-[#3D352C] rounded-2xl p-8 md:p-12 relative overflow-hidden">
