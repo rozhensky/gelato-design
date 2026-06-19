@@ -475,10 +475,10 @@
                 '<p class="help">Лишіть контакти, щоб ми могли звʼязатися щодо стратегічної сесії.</p>' +
                 tgLine +
                 '<div class="field"><label>Імʼя <span class="req">*</span></label><input id="cName" type="text" value="' + esc(defName) + '" placeholder="Як до вас звертатися"></div>' +
-                '<div class="field"><label>Email</label><input id="cEmail" type="email" inputmode="email" value="' + esc(c.email || '') + '" placeholder="you@example.com"></div>' +
-                '<div class="field"><label>Телефон</label><div class="phone-row"><select id="cCode" class="phone-code">' + codeOpts + '</select><input id="cPhone" type="tel" inputmode="tel" placeholder="номер телефону"></div></div>' +
-                '<div class="field"><label>Соцмережі</label><input id="cSocials" type="url" inputmode="url" value="' + esc(c.socials || '') + '" placeholder="Посилання на соцмережі"></div>' +
-                '<p class="help" style="font-size:12px;margin-top:14px">Обовʼязково: імʼя та хоча б один контакт (email, телефон або соцмережі).</p>' +
+                '<div class="field"><label>Email <span class="req">*</span></label><input id="cEmail" type="email" inputmode="email" value="' + esc(c.email || '') + '" placeholder="you@example.com"></div>' +
+                '<div class="field"><label>Телефон <span class="req">*</span></label><div class="phone-row"><select id="cCode" class="phone-code">' + codeOpts + '</select><input id="cPhone" type="tel" inputmode="tel" placeholder="номер телефону"></div></div>' +
+                '<div class="field"><label>Соцмережі</label><input id="cSocials" type="text" value="' + esc(c.socials || '@') + '" placeholder="напишіть нік"></div>' +
+                '<p class="help" style="font-size:12px;margin-top:14px">Обовʼязково: імʼя, email і телефон. Соцмережі — за бажанням.</p>' +
             '</div>';
         setBar('<button class="btn btn-primary" id="cNext">Перейти до питань <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
         var codeSel = $('#cCode'), phoneInp = $('#cPhone');
@@ -495,14 +495,16 @@
         });
         $('#cNext').onclick = function () {
             var pnat = phoneInp.value.trim();
+            var soc = $('#cSocials').value.trim(); if (soc === '@') soc = '';
             var data = {
                 name: $('#cName').value.trim(),
                 email: $('#cEmail').value.trim(),
                 phone: pnat ? (codeSel.value + ' ' + pnat) : '',
-                socials: $('#cSocials').value.trim()
+                socials: soc
             };
             if (!data.name) { toast('Вкажіть імʼя'); return; }
-            if (!data.email && !data.phone && !data.socials) { toast('Лишіть хоча б один контакт'); return; }
+            if (!/.+@.+\..+/.test(data.email)) { toast('Вкажіть коректний email'); return; }
+            if (!pnat) { toast('Вкажіть номер телефону'); return; }
             saveContacts(data);
             if (Sync.enabled) Sync.saveContact(data).catch(function () {});
             haptic('ok');
