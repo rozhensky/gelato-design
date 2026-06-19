@@ -94,16 +94,23 @@
     if (r.error) { document.getElementById("list").innerHTML = '<p class="muted">Помилка: ' + esc(r.error.message) + "</p>"; return; }
     var rows = r.data || [];
     if (!rows.length) { document.getElementById("list").innerHTML = '<p class="muted" style="margin-top:14px">Поки що порожньо.</p>'; return; }
-    document.getElementById("list").innerHTML = rows.map(function (b) {
+    function rowHtml(b) {
       var nVoices = (b.voices && b.voices[0]) ? b.voices[0].count : 0;
       var nLinks = (b.links && b.links[0]) ? b.links[0].count : 0;
+      var name = b.contact_name || b.tg_name || b.account_id;
       var sub = (nVoices + " голос. · " + nLinks + " посил. · " + fmtDate(b.updated_at));
       var pill = b.status === "submitted" ? '<span class="pill sub">Надіслано</span>' : '<span class="pill prog">В процесі</span>';
       return '<button class="brief-row" data-id="' + b.id + '">' +
-        '<span class="av">' + esc(initials(b.tg_name, b.account_id)) + "</span>" +
-        '<span class="nm"><span class="t">' + esc(b.tg_name || b.account_id) + (b.tg_username ? ' <span class="muted">@' + esc(b.tg_username) + "</span>" : "") + "</span>" +
+        '<span class="av">' + esc(initials(name, b.account_id)) + "</span>" +
+        '<span class="nm"><span class="t">' + esc(name) + (b.tg_username ? ' <span class="muted">@' + esc(b.tg_username) + "</span>" : "") + "</span>" +
         '<span class="s">' + esc(sub) + "</span></span>" + pill + "</button>";
-    }).join("");
+    }
+    var submitted = rows.filter(function (b) { return b.status === "submitted"; });
+    var inprog = rows.filter(function (b) { return b.status !== "submitted"; });
+    var html = "";
+    if (submitted.length) html += '<div class="group-label">Надіслані · ' + submitted.length + "</div>" + submitted.map(rowHtml).join("");
+    if (inprog.length) html += '<div class="group-label' + (submitted.length ? " mt" : "") + '">В процесі · ' + inprog.length + "</div>" + inprog.map(rowHtml).join("");
+    document.getElementById("list").innerHTML = html;
     Array.prototype.forEach.call(document.querySelectorAll(".brief-row"), function (el) {
       el.onclick = function () { renderBrief(el.getAttribute("data-id")); };
     });
