@@ -12,11 +12,22 @@ create table if not exists briefs (
     tg_user_id   bigint,
     tg_username  text,
     tg_name      text,
+    contact_name text,
+    email        text,
+    phone        text,
+    socials      text,
     status       text not null default 'in_progress',  -- in_progress | submitted
     created_at   timestamptz not null default now(),
     updated_at   timestamptz not null default now(),
     submitted_at timestamptz
 );
+
+-- contact fields (safe to re-run on an existing DB)
+alter table briefs
+    add column if not exists contact_name text,
+    add column if not exists email        text,
+    add column if not exists phone        text,
+    add column if not exists socials      text;
 
 create table if not exists answers (
     id         uuid primary key default gen_random_uuid(),

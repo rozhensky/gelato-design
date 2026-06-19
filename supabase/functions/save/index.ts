@@ -129,6 +129,17 @@ Deno.serve(async (req) => {
         return json({ ok: true });
       }
 
+      case "saveContact": {
+        const c = body.contact || {};
+        await db.from("briefs").update({
+          contact_name: c.name ?? null,
+          email: c.email ?? null,
+          phone: c.phone ?? null,
+          socials: c.socials ?? null,
+        }).eq("id", brief.id);
+        return json({ ok: true });
+      }
+
       case "submit":
         await db.from("briefs").update({ status: "submitted", submitted_at: new Date().toISOString() }).eq("id", brief.id);
         return json({ ok: true });

@@ -138,6 +138,14 @@
 
     current = { brief: brief, voices: voices, links: links, vByQ: vByQ, lByQ: lByQ };
 
+    var cinfo = [];
+    if (brief.contact_name) cinfo.push(["Імʼя", esc(brief.contact_name)]);
+    if (brief.email) cinfo.push(["Email", '<a href="mailto:' + esc(brief.email) + '">' + esc(brief.email) + "</a>"]);
+    if (brief.phone) cinfo.push(["Телефон", '<a href="tel:' + esc(brief.phone) + '">' + esc(brief.phone) + "</a>"]);
+    if (brief.socials) cinfo.push(["Соцмережі", esc(brief.socials)]);
+    if (brief.tg_username) cinfo.push(["Telegram", "@" + esc(brief.tg_username)]);
+    var contactHtml = cinfo.length ? ('<div class="contacts">' + cinfo.map(function (c) { return '<div class="crow"><span class="ck">' + c[0] + '</span><span class="cv">' + c[1] + "</span></div>"; }).join("") + "</div>") : "";
+
     var blocks = QTITLES.map(function (title, idx) {
       var n = idx + 1;
       var vs = vByQ[n] || [], ls = lByQ[n] || [];
@@ -163,6 +171,7 @@
       '<div class="card"><div class="eyebrow">Бриф</div><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 4px"><h1>' + esc(brief.tg_name || brief.account_id) + "</h1>" +
       (brief.status === "submitted" ? '<span class="pill sub">Надіслано</span>' : '<span class="pill prog">В процесі</span>') + "</div>" +
       '<p class="muted" style="font-size:13px">' + (brief.tg_username ? "@" + esc(brief.tg_username) + " · " : "") + esc(brief.account_id) + " · оновлено " + fmtDate(brief.updated_at) + "</p>" +
+      contactHtml +
       '<div style="margin-top:14px">' + blocks + "</div></div>";
 
     document.getElementById("back").onclick = function () { renderList(); };
@@ -180,10 +189,14 @@
       var safe = (brief.tg_name || brief.account_id || "brief").replace(/[^\wа-яіїєґ\-]+/gi, "_");
       var root = "brief-" + safe;
 
-      var md = "# Бриф: " + (brief.tg_name || brief.account_id) + "\n\n" +
+      var md = "# Бриф: " + (brief.contact_name || brief.tg_name || brief.account_id) + "\n\n" +
         "- Акаунт: " + brief.account_id + (brief.tg_username ? " (@" + brief.tg_username + ")" : "") + "\n" +
+        (brief.contact_name ? "- Імʼя: " + brief.contact_name + "\n" : "") +
+        (brief.email ? "- Email: " + brief.email + "\n" : "") +
+        (brief.phone ? "- Телефон: " + brief.phone + "\n" : "") +
+        (brief.socials ? "- Соцмережі: " + brief.socials + "\n" : "") +
         "- Статус: " + brief.status + "\n- Оновлено: " + brief.updated_at + "\n\n---\n\n";
-      var json = { account: brief.account_id, tg_name: brief.tg_name, tg_username: brief.tg_username, status: brief.status, questions: [] };
+      var json = { account: brief.account_id, contact_name: brief.contact_name, email: brief.email, phone: brief.phone, socials: brief.socials, tg_name: brief.tg_name, tg_username: brief.tg_username, status: brief.status, questions: [] };
 
       for (var n = 1; n <= QTITLES.length; n++) {
         md += "## " + n + ". " + QTITLES[n - 1] + "\n\n";

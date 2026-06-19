@@ -36,6 +36,10 @@
     }
     var tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
     var ACCOUNT_ID = tgUser ? ('tg_' + tgUser.id) : 'local';
+    var CONTACTS_KEY = 'gelato_contacts_' + ACCOUNT_ID;
+    function getContacts() { try { return JSON.parse(localStorage.getItem(CONTACTS_KEY)) || {}; } catch (e) { return {}; } }
+    function saveContacts(c) { try { localStorage.setItem(CONTACTS_KEY, JSON.stringify(c)); } catch (e) {} }
+    function contactsDone() { var c = getContacts(); return !!(c.name && (c.email || c.phone || c.socials)); }
 
     /* ---------- Questions ---------- */
     var QUESTIONS = [
@@ -61,7 +65,7 @@
           help: 'Покажіть продукти й інтерфейси, які вам подобаються (і чим саме). Посилання, відео-огляди, Loom.',
           formats: ['links', 'video', 'voice'] },
         { n: 8,  title: 'Бренд, тон і стиль',
-          help: 'Який настрій і характер у продукту? Приклади візуалу чи брендів, що резонують.',
+          help: 'Який настрій і характер у продукту? Приклади візуалу чи брендів, що резонують. Запишіть голосовим ваші коментарі до дизайну й обовʼязково додайте посилання на референси.',
           formats: ['voice', 'links'],
           hint: { url: 'https://www.aura.build/design-systems', label: 'Відкрити Aura',
                   text: 'На Aura зібрані різні дизайн-системи продуктів. Знайдіть ту, що подобається найбільше, відкрийте її, скопіюйте посилання — і вставте нижче. Це допоможе нам зрозуміти ваші смаки.' } },
@@ -200,6 +204,7 @@
             deleteVoice: function (rid) { return call('deleteVoice', { id: rid }); },
             saveLink: function (n, title, url, kind) { return call('saveLink', { qNum: n, title: title, url: url, kind: kind }).then(function (r) { return r.id; }); },
             deleteLink: function (rid) { return call('deleteLink', { id: rid }); },
+            saveContact: function (c) { return call('saveContact', { contact: c }); },
             submit: function () { return call('submit', {}); }
         };
     })();
@@ -233,13 +238,14 @@
 
     function setBackButton() {
         if (!tg || !tg.BackButton) return;
-        if (state.pos > -1 && state.pos < 11) tgCall(function () { tg.BackButton.show(); });
+        if (state.pos === 'contact' || (state.pos > -1 && state.pos < 11)) tgCall(function () { tg.BackButton.show(); });
         else tgCall(function () { tg.BackButton.hide(); });
     }
     if (tg && tg.BackButton) tgCall(function () { tg.BackButton.onClick(function () { goBack(); }); });
 
     function goBack() {
         stopRecording(true);
+        if (state.pos === 'contact') { state.pos = -1; render(); return; }
         if (state.pos === 0) state.pos = -1;
         else if (state.pos >= 1 && state.pos <= 10) state.pos -= 1;
         render();
@@ -392,6 +398,7 @@
 
     function render() {
         setBackButton();
+        if (state.pos === 'contact') return renderContact();
         if (state.pos === -1) return renderIntro();
         if (state.pos >= 0 && state.pos <= 9) return renderQuestion(state.pos);
         if (state.pos === 10) return renderReview();
@@ -425,9 +432,52 @@
         $('#startBtn').onclick = function () {
             var first = 0;
             for (var i = 0; i < QUESTIONS.length; i++) { if (!isAnswered('q' + QUESTIONS[i].n)) { first = i; break; } }
+            if (!contactsDone()) { goTo('contact'); return; }
             goTo(resuming ? first : 0);
         };
         if ($('#reviewBtn')) $('#reviewBtn').onclick = function () { goTo(10); };
+    }
+
+    function renderContact() {
+        var c = getContacts();
+        var defName = c.name || (tgUser ? [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') : '');
+        var tgLine = (tgUser && tgUser.username)
+            ? '<div class="tg-chip"><iconify-icon icon="solar:chat-round-line-linear"></iconify-icon> Telegram: @' + esc(tgUser.username) + '</div>'
+            : '';
+        app.innerHTML =
+            topChrome('Контакти') +
+            '<div class="card">' +
+                '<div class="eyebrow">Перед початком</div>' +
+                '<h2 class="qtitle">Ваші контакти</h2>' +
+                '<p class="help">Лишіть контакти, щоб ми могли звʼязатися щодо стратегічної сесії.</p>' +
+                tgLine +
+                '<div class="field"><label>Імʼя <span class="req">*</span></label><input id="cName" type="text" value="' + esc(defName) + '" placeholder="Як до вас звертатися"></div>' +
+                '<div class="field"><label>Email</label><input id="cEmail" type="email" inputmode="email" value="' + esc(c.email || '') + '" placeholder="you@example.com"></div>' +
+                '<div class="field"><label>Телефон</label><input id="cPhone" type="tel" inputmode="tel" value="' + esc(c.phone || '') + '" placeholder="+380…"></div>' +
+                '<div class="field"><label>Соцмережі</label><input id="cSocials" type="text" value="' + esc(c.socials || '') + '" placeholder="Instagram, LinkedIn… (посилання)"></div>' +
+                '<p class="help" style="font-size:12px;margin-top:14px">Обовʼязково: імʼя та хоча б один контакт (email, телефон або соцмережі).</p>' +
+            '</div>';
+        setBar(
+            '<button class="btn btn-ghost narrow" id="cBack"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>' +
+            '<button class="btn btn-primary" id="cNext">Далі <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
+        );
+        $('#cBack').onclick = function () { goTo(-1); };
+        $('#cNext').onclick = function () {
+            var data = {
+                name: $('#cName').value.trim(),
+                email: $('#cEmail').value.trim(),
+                phone: $('#cPhone').value.trim(),
+                socials: $('#cSocials').value.trim()
+            };
+            if (!data.name) { toast('Вкажіть імʼя'); return; }
+            if (!data.email && !data.phone && !data.socials) { toast('Лишіть хоча б один контакт'); return; }
+            saveContacts(data);
+            if (Sync.enabled) Sync.saveContact(data).catch(function () {});
+            haptic('ok');
+            var first = 0;
+            for (var i = 0; i < QUESTIONS.length; i++) { if (!isAnswered('q' + QUESTIONS[i].n)) { first = i; break; } }
+            goTo(first);
+        };
     }
 
     function renderQuestion(idx) {
@@ -476,7 +526,7 @@
 
         var hintHtml = q.hint ? (
             '<a class="hint" href="' + esc(q.hint.url) + '" target="_blank" rel="noopener">' +
-                '<span class="hint-ic"><iconify-icon icon="solar:palette-2-linear"></iconify-icon></span>' +
+                '<span class="hint-ic"><img class="hint-logo" src="aura.svg" alt="Aura"></span>' +
                 '<span class="hint-body"><span class="hint-text">' + esc(q.hint.text) + '</span>' +
                 '<span class="hint-link">' + esc(q.hint.label) + ' <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></span></span>' +
             '</a>'
