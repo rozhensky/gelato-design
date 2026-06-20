@@ -47,36 +47,36 @@
     var QUESTIONS = [
         { n: 1,  title: 'Проблема та її актуальність',
           help: 'Яку проблему вирішує ваш продукт і чому вона важлива? Що зараз незручно, повільно або дорого для ваших користувачів? Наприклад: «люди витрачають години на пошук…» або «бізнес втрачає клієнтів, бо…».',
-          formats: ['voice'] },
+          formats: ['voice'], linkHint: 'Якщо є дослідження, статті чи дані, що підтверджують проблему — додайте посилання.' },
         { n: 2,  title: 'Для кого це',
           help: 'Хто ваш головний користувач? Опишіть конкретну людину: вік, рід занять, ситуація. Коли й де вона скористається продуктом? Наприклад: «підприємець-початківець, який щойно відкрив магазин».',
-          formats: ['voice'] },
+          formats: ['voice'], linkHint: 'Якщо ви вже описали цільову аудиторію (портрет користувача, дослідження) — додайте посилання на документ.' },
         { n: 3,  title: 'Як вирішують зараз',
           help: 'Як люди вирішують це завдання зараз — інші додатки, Excel, вручну чи ніяк? Що в цих способах не влаштовує і чим ви будете кращими? Додайте посилання на конкурентів, якщо є.',
-          formats: ['voice', 'links'] },
+          formats: ['voice', 'links'], linkHint: 'Посилання на конкурентів або рішення, якими люди користуються зараз.' },
         { n: 4,  title: 'Суть і головна цінність',
           help: 'Опишіть продукт простими словами, ніби розповідаєте другу. Що людина зможе зробити і що отримає в результаті? Наприклад: «застосунок, де за 2 хвилини можна…».',
-          formats: ['voice'] },
+          formats: ['voice'], linkHint: 'Якщо є презентація, лендинг чи опис продукту — додайте посилання.' },
         { n: 5,  title: 'Перший «вау»-сценарій',
           help: 'Уявіть, що людина вперше відкрила продукт. Проведіть нас кроками: що вона бачить, що натискає і в який момент думає «о, це справді корисно»?',
-          formats: ['voice'] },
+          formats: ['voice'], linkHint: 'Якщо є приклад подібного флоу, демо чи запис екрана — додайте посилання.' },
         { n: 6,  title: 'Функції першої версії',
           help: 'Які 3–5 функцій обовʼязкові для першої версії — без них продукт не має сенсу? І що навпаки можна сміливо відкласти на потім?',
-          formats: ['voice'] },
+          formats: ['voice'], linkHint: 'Якщо є список функцій, бек-лог чи roadmap — додайте посилання.' },
         { n: 7,  title: 'Референси та конкуренти',
           help: 'Покажіть продукти, додатки чи сайти, які вам подобаються — і скажіть, що саме чіпляє (зручність, стиль, конкретна функція). Додайте посилання, відео-огляди або запис екрана.',
-          formats: ['links', 'video', 'voice'] },
+          formats: ['links', 'video', 'voice'], linkHint: 'Посилання на продукти/інтерфейси, що подобаються, відео-огляди або Loom.' },
         { n: 8,  title: 'Бренд, тон і стиль',
           help: 'Який характер і настрій у продукту — діловий, дружній, преміальний, грайливий? Які кольори чи візуал вам близькі? Запишіть голосом свої побажання до дизайну й обовʼязково додайте посилання на референси.',
-          formats: ['voice', 'links'],
+          formats: ['voice', 'links'], linkHint: 'Референси дизайну, мудборд, бренд-гайд або посилання з Aura.',
           hint: { url: 'https://www.aura.build/design-systems', label: 'Відкрити Aura',
                   text: 'На Aura зібрані різні дизайн-системи продуктів. Знайдіть ту, що подобається найбільше, відкрийте її, скопіюйте посилання — і вставте нижче. Це допоможе нам зрозуміти ваші смаки.' } },
         { n: 9,  title: 'Монетизація',
           help: 'Як продукт заробляє або зароблятиме — підписка, разова оплата, комісія, реклама? Хто і скільки приблизно платить? Якщо ще не вирішили — опишіть варіанти, які розглядаєте.',
-          formats: ['voice'] },
+          formats: ['voice'], linkHint: 'Якщо є фінмодель, прайсинг чи приклади монетизації — додайте посилання.' },
         { n: 10, title: 'Успіх і наступний крок',
           help: 'Як ви зрозумієте, що прототип вдалий — які цифри чи реакція людей це покажуть? Кому плануєте показати першим: інвесторам, аудиторії чи першим клієнтам?',
-          formats: ['voice', 'video'] }
+          formats: ['voice', 'video'], linkHint: 'Якщо є метрики, цілі чи матеріали для інвесторів — додайте посилання.' }
     ];
     var FORMAT_META = {
         voice: { label: 'Голос', icon: 'solar:microphone-3-linear' },
@@ -555,7 +555,6 @@
 
     function renderQuestion(idx) {
         var q = QUESTIONS[idx], qid = 'q' + q.n, a = ansFor(qid);
-        var wantsLinks = q.formats.indexOf('links') > -1 || q.formats.indexOf('video') > -1;
         var wantsVideo = q.formats.indexOf('video') > -1;
 
         var voicesHtml = a.voices.length
@@ -580,17 +579,17 @@
             }).join('') + '</div>'
             : '';
 
-        var linkBlock = wantsLinks ? (
+        var linkBlock =
             '<div class="block">' +
                 '<div class="block-label"><iconify-icon icon="' + (wantsVideo ? 'solar:videocamera-record-linear' : 'solar:link-linear') + '"></iconify-icon>' +
                     (wantsVideo ? 'Посилання та відео' : 'Посилання') + '</div>' +
+                (q.linkHint ? '<p class="link-hint">' + esc(q.linkHint) + '</p>' : '') +
                 linksHtml +
                 '<div class="adder">' +
                     '<input id="linkInput" type="url" inputmode="url" placeholder="Вставте посилання">' +
                     '<button id="linkAdd"><iconify-icon icon="mdi:plus"></iconify-icon> Додати</button>' +
                 '</div>' +
-            '</div>'
-        ) : '';
+            '</div>';
 
         var hintHtml = q.hint ? (
             '<a class="hint" href="' + esc(q.hint.url) + '" target="_blank" rel="noopener">' +
@@ -639,15 +638,13 @@
         document.querySelectorAll('[data-dellink]').forEach(function (b) {
             b.onclick = function () { deleteLink(qid, b.getAttribute('data-dellink')); };
         });
-        if (wantsLinks) {
-            var inp = $('#linkInput');
-            var doAdd = function () {
-                var kind = /youtu\.?be|loom\.com|vimeo|\.mp4|\.mov/i.test(inp.value) ? 'video' : 'link';
-                addLink(qid, inp.value, wantsVideo ? kind : 'link');
-            };
-            $('#linkAdd').onclick = doAdd;
-            inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
-        }
+        var inp = $('#linkInput');
+        var doAdd = function () {
+            var kind = /youtu\.?be|loom\.com|vimeo|\.mp4|\.mov/i.test(inp.value) ? 'video' : 'link';
+            addLink(qid, inp.value, wantsVideo ? kind : 'link');
+        };
+        $('#linkAdd').onclick = doAdd;
+        inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
         var pv = document.getElementById('prevBtn'); if (pv) pv.onclick = function () { goTo(idx === 0 ? 'overview' : idx - 1); };
         $('#goReview').onclick = function () { goTo(10); };
         $('#nextBtn').onclick = function () { goTo(idx + 1 > 9 ? 10 : idx + 1); };
