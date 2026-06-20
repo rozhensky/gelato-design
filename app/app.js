@@ -35,6 +35,120 @@
     }
     var tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
     var ACCOUNT_ID = tgUser ? ('tg_' + tgUser.id) : 'local';
+
+    /* ---------- i18n (UA default / RU) — auto from Telegram/browser language ---------- */
+    var LANG = (function () {
+        var saved = null;
+        try { saved = localStorage.getItem('gelatoLang'); } catch (e) {}
+        if (saved === 'ru' || saved === 'uk') return saved;
+        var code = ((tgUser && tgUser.language_code) || navigator.language || '').toLowerCase();
+        return code.indexOf('ru') === 0 ? 'ru' : 'uk';
+    })();
+    try { document.documentElement.lang = LANG; } catch (e) {}
+    var RU = {
+"Опис продукту":"Описание продукта",
+"Запис не підтримується — завантажте аудіофайл":"Запись не поддерживается — загрузите аудиофайл",
+"Немає доступу до мікрофона":"Нет доступа к микрофону",
+"Запис надто короткий":"Запись слишком короткая",
+"Натисніть, щоб записати голосову":"Нажмите, чтобы записать голосовое",
+"● Запис…":"● Запись…",
+"Аудіо недоступне":"Аудио недоступно",
+"Не вдалося відтворити":"Не удалось воспроизвести",
+"Перевірте посилання":"Проверьте ссылку",
+"Інтерактивний бриф · ~10–15 хв":"Интерактивный бриф · ~10–15 мин",
+"Розкажіть про ідею":"Расскажите об идее",
+"10 коротких питань, щоб ми зрозуміли ваш продукт ще до стратегічної сесії. Відповідайте, як зручно — голосом, посиланнями чи відео.":"10 коротких вопросов, чтобы мы поняли ваш продукт ещё до стратегической сессии. Отвечайте, как удобно — голосом, ссылками или видео.",
+"На кожне питання — одна чи кілька голосових. Можна прослухати й перезаписати.":"На каждый вопрос — одно или несколько голосовых. Можно прослушать и перезаписать.",
+"Посилання та відео":"Ссылки и видео",
+"Кидайте конкурентів, референси, огляди чи Loom — усе в одному місці.":"Кидайте конкурентов, референсы, обзоры или Loom — всё в одном месте.",
+"Зберігається саме":"Сохраняется само",
+"Можна вийти й повернутись будь-коли — відповіді лишаться на вашому акаунті.":"Можно выйти и вернуться в любой момент — ответы останутся в вашем аккаунте.",
+"Огляд":"Обзор",
+"Продовжити · {0}/10":"Продолжить · {0}/10",
+"Розпочати":"Начать",
+"Контакти":"Контакты",
+"Перед початком":"Перед началом",
+"Ваші контакти":"Ваши контакты",
+"Лишіть контакти, щоб ми могли звʼязатися щодо стратегічної сесії.":"Оставьте контакты, чтобы мы могли связаться по поводу стратегической сессии.",
+"Імʼя":"Имя",
+"Як до вас звертатися":"Как к вам обращаться",
+"номер телефону":"номер телефона",
+"Соцмережі":"Соцсети",
+"напишіть нік":"напишите ник",
+"Обовʼязково: імʼя, email і телефон. Соцмережі — за бажанням.":"Обязательно: имя, email и телефон. Соцсети — по желанию.",
+"Перейти до питань":"Перейти к вопросам",
+"Вкажіть імʼя":"Укажите имя",
+"Вкажіть коректний email":"Укажите корректный email",
+"Вкажіть номер телефону":"Укажите номер телефона",
+"Не вдалося зберегти контакти — перевірте бекенд":"Не удалось сохранить контакты — проверьте бэкенд",
+"Запис #{0}":"Запись #{0}",
+"Почнімо з головного":"Начнём с главного",
+"Розкажіть про продукт своїми словами":"Расскажите о продукте своими словами",
+"Перед детальними питаннями просто опишіть голосом, про що ваш продукт і навіщо ви його робите — як відчуваєте самі, без деталізації. Можна одне чи кілька повідомлень, будь-якої довжини. Далі перейдемо до конкретних питань.":"Перед подробными вопросами просто опишите голосом, о чём ваш продукт и зачем вы его делаете — как чувствуете сами, без детализации. Можно одно или несколько сообщений, любой длины. Дальше перейдём к конкретным вопросам.",
+"Голосовий опис":"Голосовое описание",
+"До питань":"К вопросам",
+"Посилання":"Ссылки",
+"Вставте посилання":"Вставьте ссылку",
+"Додати":"Добавить",
+"Питання {0} з {1}":"Вопрос {0} из {1}",
+"Питання":"Вопросы",
+"Голосова відповідь":"Голосовой ответ",
+"До огляду":"К обзору",
+"Далі":"Далее",
+"Ще не заповнено":"Ещё не заполнено",
+"Бриф надіслано":"Бриф отправлен",
+"Дякуємо! Будь-які зміни, які ви додаєте далі — нові голосові чи посилання — ми отримуємо автоматично. Повторно надсилати нічого не потрібно.":"Спасибо! Любые изменения, которые вы добавите дальше — новые голосовые или ссылки — мы получаем автоматически. Повторно отправлять ничего не нужно.",
+"Майже готово":"Почти готово",
+"Перегляньте бриф":"Просмотрите бриф",
+"Усе заповнено — можна надсилати бриф.":"Всё заполнено — можно отправлять бриф.",
+"Заповнено {0} із {1}. Надіслати можна, коли заповните всі питання.":"Заполнено {0} из {1}. Отправить можно, когда заполните все вопросы.",
+"Огляд · {0}/{1}":"Обзор · {0}/{1}",
+"Надіслати бриф":"Отправить бриф",
+"Дякуємо за підтвердження! Ми вивчимо матеріали й підготуємось до стратегічної сесії. Будь-які зміни, які ви додасте далі, ми отримаємо автоматично — повторно надсилати не потрібно.":"Спасибо за подтверждение! Мы изучим материалы и подготовимся к стратегической сессии. Любые изменения, которые вы добавите дальше, мы получим автоматически — повторно отправлять не нужно.",
+"Відкрити бриф знову":"Открыть бриф снова",
+"Завантаження брифу…":"Загрузка брифа…",
+"Бриф не завантажився — перевірте функцію save":"Бриф не загрузился — проверьте функцию save",
+"Проблема та її актуальність":"Проблема и её актуальность",
+"Для кого це":"Для кого это",
+"Як вирішують зараз":"Как решают сейчас",
+"Суть і головна цінність":"Суть и главная ценность",
+"Перший «вау»-сценарій":"Первый «вау»-сценарий",
+"Функції першої версії":"Функции первой версии",
+"Референси та конкуренти":"Референсы и конкуренты",
+"Бренд, тон і стиль":"Бренд, тон и стиль",
+"Монетизація":"Монетизация",
+"Успіх і наступний крок":"Успех и следующий шаг",
+"Яку проблему вирішує ваш продукт і чому вона важлива? Що зараз незручно, повільно або дорого для ваших користувачів? Наприклад: «люди витрачають години на пошук…» або «бізнес втрачає клієнтів, бо…».":"Какую проблему решает ваш продукт и почему она важна? Что сейчас неудобно, медленно или дорого для ваших пользователей? Например: «люди тратят часы на поиск…» или «бизнес теряет клиентов, потому что…».",
+"Хто ваш головний користувач? Опишіть конкретну людину: вік, рід занять, ситуація. Коли й де вона скористається продуктом? Наприклад: «підприємець-початківець, який щойно відкрив магазин».":"Кто ваш главный пользователь? Опишите конкретного человека: возраст, род занятий, ситуация. Когда и где он воспользуется продуктом? Например: «начинающий предприниматель, который только что открыл магазин».",
+"Як люди вирішують це завдання зараз — інші додатки, Excel, вручну чи ніяк? Що в цих способах не влаштовує і чим ви будете кращими? Додайте посилання на конкурентів, якщо є.":"Как люди решают эту задачу сейчас — другие приложения, Excel, вручную или никак? Что в этих способах не устраивает и чем вы будете лучше? Добавьте ссылки на конкурентов, если есть.",
+"Опишіть продукт простими словами, ніби розповідаєте другу. Що людина зможе зробити і що отримає в результаті? Наприклад: «застосунок, де за 2 хвилини можна…».":"Опишите продукт простыми словами, будто рассказываете другу. Что человек сможет сделать и что получит в результате? Например: «приложение, где за 2 минуты можно…».",
+"Уявіть, що людина вперше відкрила продукт. Проведіть нас кроками: що вона бачить, що натискає і в який момент думає «о, це справді корисно»?":"Представьте, что человек впервые открыл продукт. Проведите нас по шагам: что он видит, что нажимает и в какой момент думает «о, это действительно полезно»?",
+"Які 3–5 функцій обовʼязкові для першої версії — без них продукт не має сенсу? І що навпаки можна сміливо відкласти на потім?":"Какие 3–5 функций обязательны для первой версии — без них продукт не имеет смысла? И что наоборот можно смело отложить на потом?",
+"Покажіть продукти, додатки чи сайти, які вам подобаються — і скажіть, що саме чіпляє (зручність, стиль, конкретна функція). Додайте посилання, відео-огляди або запис екрана.":"Покажите продукты, приложения или сайты, которые вам нравятся — и скажите, что именно цепляет (удобство, стиль, конкретная функция). Добавьте ссылки, видеообзоры или запись экрана.",
+"Який характер і настрій у продукту — діловий, дружній, преміальний, грайливий? Які кольори чи візуал вам близькі? Запишіть голосом свої побажання до дизайну й обовʼязково додайте посилання на референси.":"Какой характер и настроение у продукта — деловой, дружелюбный, премиальный, игривый? Какие цвета или визуал вам близки? Запишите голосом свои пожелания к дизайну и обязательно добавьте ссылки на референсы.",
+"Як продукт заробляє або зароблятиме — підписка, разова оплата, комісія, реклама? Хто і скільки приблизно платить? Якщо ще не вирішили — опишіть варіанти, які розглядаєте.":"Как продукт зарабатывает или будет зарабатывать — подписка, разовая оплата, комиссия, реклама? Кто и сколько примерно платит? Если ещё не решили — опишите варианты, которые рассматриваете.",
+"Як ви зрозумієте, що прототип вдалий — які цифри чи реакція людей це покажуть? Кому плануєте показати першим: інвесторам, аудиторії чи першим клієнтам?":"Как вы поймёте, что прототип удался — какие цифры или реакция людей это покажут? Кому планируете показать первым: инвесторам, аудитории или первым клиентам?",
+"Якщо є дослідження, статті чи дані, що підтверджують проблему — додайте посилання.":"Если есть исследования, статьи или данные, подтверждающие проблему — добавьте ссылку.",
+"Якщо ви вже описали цільову аудиторію (портрет користувача, дослідження) — додайте посилання на документ.":"Если вы уже описали целевую аудиторию (портрет пользователя, исследование) — добавьте ссылку на документ.",
+"Посилання на конкурентів або рішення, якими люди користуються зараз.":"Ссылки на конкурентов или решения, которыми люди пользуются сейчас.",
+"Якщо є презентація, лендинг чи опис продукту — додайте посилання.":"Если есть презентация, лендинг или описание продукта — добавьте ссылку.",
+"Якщо є приклад подібного флоу, демо чи запис екрана — додайте посилання.":"Если есть пример похожего флоу, демо или запись экрана — добавьте ссылку.",
+"Якщо є список функцій, бек-лог чи roadmap — додайте посилання.":"Если есть список функций, бэклог или roadmap — добавьте ссылку.",
+"Посилання на продукти/інтерфейси, що подобаються, відео-огляди або Loom.":"Ссылки на продукты/интерфейсы, которые нравятся, видеообзоры или Loom.",
+"Референси дизайну, мудборд, бренд-гайд або посилання з Aura.":"Референсы дизайна, мудборд, бренд-гайд или ссылка из Aura.",
+"Якщо є фінмодель, прайсинг чи приклади монетизації — додайте посилання.":"Если есть финмодель, прайсинг или примеры монетизации — добавьте ссылку.",
+"Якщо є метрики, цілі чи матеріали для інвесторів — додайте посилання.":"Если есть метрики, цели или материалы для инвесторов — добавьте ссылку.",
+"Відкрити Aura":"Открыть Aura",
+"Відео":"Видео",
+"На Aura зібрані різні дизайн-системи продуктів. Знайдіть ту, що подобається найбільше, відкрийте її, скопіюйте посилання — і вставте нижче. Це допоможе нам зрозуміти ваші смаки.":"На Aura собраны разные дизайн-системы продуктов. Найдите ту, что нравится больше всего, откройте её, скопируйте ссылку — и вставьте ниже. Это поможет нам понять ваши вкусы."
+};
+    function t(s) { return (LANG === 'ru' && RU[s] != null) ? RU[s] : s; }
+    function tf(s) { var a = arguments; return t(s).replace(/\{(\d+)\}/g, function (_, i) { return a[(+i) + 1]; }); }
+    var PLURALS = {
+        'запис': { uk: ['запис', 'записи', 'записів'], ru: ['запись', 'записи', 'записей'] },
+        'посилання': { uk: ['посилання', 'посилання', 'посилань'], ru: ['ссылка', 'ссылки', 'ссылок'] }
+    };
+    function pl(n, key) { var f = (PLURALS[key] && PLURALS[key][LANG]) || PLURALS[key].uk; var d = n % 10, h = n % 100; if (d === 1 && h !== 11) return f[0]; if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return f[1]; return f[2]; }
     var CONTACTS = {};       // hydrated from backend (source of truth)
     var SUBMITTED = false;   // hydrated from backend
     function getContacts() { return CONTACTS; }
@@ -222,7 +336,7 @@
         };
     })();
 
-    function qMeta(qid) { var n = parseInt(qid.slice(1), 10); if (n === 0) return { n: 0, title: 'Опис продукту' }; return { n: n, title: (QUESTIONS[n - 1] || {}).title || '' }; }
+    function qMeta(qid) { var n = parseInt(qid.slice(1), 10); if (n === 0) return { n: 0, title: t('Опис продукту') }; return { n: n, title: (QUESTIONS[n - 1] || {}).title || '' }; }
     function syncVoice(qid, clip) {
         if (!Sync.enabled) return;
         var m = qMeta(qid);
@@ -266,6 +380,18 @@
     }
     function goTo(pos) { stopRecording(true); state.pos = pos; window.scrollTo(0, 0); render(); }
 
+    // language toggle (top chrome) — re-renders in the chosen language
+    document.addEventListener('click', function (e) {
+        var b = (e.target && e.target.closest) ? e.target.closest('[data-lang]') : null;
+        if (!b) return;
+        var l = b.getAttribute('data-lang');
+        if (l === LANG) return;
+        LANG = l;
+        try { localStorage.setItem('gelatoLang', l); } catch (err) {}
+        try { document.documentElement.lang = l; } catch (err) {}
+        render();
+    });
+
     /* ============================================================
        Audio recording controller
        ============================================================ */
@@ -283,7 +409,7 @@
     function startRecording(qid) {
         if (rec.active) return;
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
-            toast('Запис не підтримується — завантажте аудіофайл'); return;
+            toast(t('Запис не підтримується — завантажте аудіофайл')); return;
         }
         navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
             var mime = pickMime();
@@ -298,7 +424,7 @@
             tickRec();
             rec.int = setInterval(tickRec, 250);
         }).catch(function () {
-            toast('Немає доступу до мікрофона');
+            toast(t('Немає доступу до мікрофона'));
         });
     }
 
@@ -317,7 +443,7 @@
         if (discard || !chunks.length) { setRecState(); return; }
         var type = (chunks[0] && chunks[0].type) || 'audio/webm';
         var blob = new Blob(chunks, { type: type });
-        if (blob.size < 600) { toast('Запис надто короткий'); setRecState(); return; }
+        if (blob.size < 600) { toast(t('Запис надто короткий')); setRecState(); return; }
         var a = ansFor(qid);
         var clip = { id: uid(), blob: blob, mime: type, dur: dur, ts: Date.now() };
         a.voices.push(clip);
@@ -340,13 +466,13 @@
             btn.classList.remove('is-rec');
             btn.innerHTML = '<iconify-icon icon="solar:microphone-3-bold"></iconify-icon>';
             if (wrap) wrap.classList.remove('live');
-            if (hint) { hint.classList.remove('live'); hint.textContent = 'Натисніть, щоб записати голосову'; }
+            if (hint) { hint.classList.remove('live'); hint.textContent = t('Натисніть, щоб записати голосову'); }
         }
     }
     // updates ONLY the timer text on the interval
     function tickRec() {
         var hint = $('#recHint');
-        if (hint && rec.active) hint.textContent = '● Запис… ' + fmtTime((Date.now() - rec.t0) / 1000);
+        if (hint && rec.active) hint.textContent = t('● Запис…') + ' ' + fmtTime((Date.now() - rec.t0) / 1000);
     }
 
     /* ---------- playback (single shared <audio>) ---------- */
@@ -359,9 +485,9 @@
         if (playingUrl) { URL.revokeObjectURL(playingUrl); playingUrl = null; }
         if (clip.blob) { playingUrl = URL.createObjectURL(clip.blob); player.src = playingUrl; }
         else if (clip.url) { player.src = clip.url; }
-        else { toast('Аудіо недоступне'); return; }
+        else { toast(t('Аудіо недоступне')); return; }
         playingId = clipId;
-        player.play().catch(function () { toast('Не вдалося відтворити'); });
+        player.play().catch(function () { toast(t('Не вдалося відтворити')); });
     }
     player.addEventListener('play', updatePlayIcons);
     player.addEventListener('pause', updatePlayIcons);
@@ -394,7 +520,7 @@
     }
     function addLink(qid, raw, kind) {
         var url = normalizeUrl(raw);
-        if (!url) { toast('Перевірте посилання'); return false; }
+        if (!url) { toast(t('Перевірте посилання')); return false; }
         var link = { id: uid(), url: url, kind: kind || 'link', ts: Date.now() };
         ansFor(qid).links.push(link);
         persist(qid);
@@ -414,6 +540,10 @@
         return '' +
             '<div class="top">' +
                 '<div class="step-count">' + label + '</div>' +
+                '<div class="lang-toggle">' +
+                    '<button type="button" data-lang="uk"' + (LANG === 'uk' ? ' class="on"' : '') + '>UA</button>' +
+                    '<button type="button" data-lang="ru"' + (LANG === 'ru' ? ' class="on"' : '') + '>RU</button>' +
+                '</div>' +
             '</div>' +
             '<div class="pbar"><i style="width:' + pct + '%"></i></div>';
     }
@@ -438,20 +568,20 @@
         var resuming = done > 0;
         var hi = tgUser && tgUser.first_name ? (', ' + esc(tgUser.first_name)) : '';
         app.innerHTML =
-            topChrome('Бриф') +
+            topChrome(t('Бриф')) +
             '<div class="card">' +
-                '<div class="eyebrow">Інтерактивний бриф · ~10–15 хв</div>' +
-                '<h1 class="title">Розкажіть про ідею' + hi + '</h1>' +
-                '<p class="help">10 коротких питань, щоб ми зрозуміли ваш продукт ще до стратегічної сесії. Відповідайте, як зручно — голосом, посиланнями чи відео.</p>' +
+                '<div class="eyebrow">' + t('Інтерактивний бриф · ~10–15 хв') + '</div>' +
+                '<h1 class="title">' + t('Розкажіть про ідею') + hi + '</h1>' +
+                '<p class="help">' + t('10 коротких питань, щоб ми зрозуміли ваш продукт ще до стратегічної сесії. Відповідайте, як зручно — голосом, посиланнями чи відео.') + '</p>' +
                 '<div class="intro-feats">' +
-                    feat('solar:microphone-3-linear', 'Голосом', 'На кожне питання — одна чи кілька голосових. Можна прослухати й перезаписати.') +
-                    feat('solar:link-linear', 'Посилання та відео', 'Кидайте конкурентів, референси, огляди чи Loom — усе в одному місці.') +
-                    feat('solar:diskette-linear', 'Зберігається саме', 'Можна вийти й повернутись будь-коли — відповіді лишаться на вашому акаунті.') +
+                    feat('solar:microphone-3-linear', t('Голосом'), t('На кожне питання — одна чи кілька голосових. Можна прослухати й перезаписати.')) +
+                    feat('solar:link-linear', t('Посилання та відео'), t('Кидайте конкурентів, референси, огляди чи Loom — усе в одному місці.')) +
+                    feat('solar:diskette-linear', t('Зберігається саме'), t('Можна вийти й повернутись будь-коли — відповіді лишаться на вашому акаунті.')) +
                 '</div>' +
             '</div>';
         setBar(resuming
-            ? '<button class="btn btn-ghost" id="reviewBtn">Огляд</button><button class="btn btn-primary" id="startBtn"><iconify-icon icon="solar:play-circle-bold"></iconify-icon> Продовжити · ' + done + '/10</button>'
-            : '<button class="btn btn-primary" id="startBtn">Розпочати <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
+            ? '<button class="btn btn-ghost" id="reviewBtn">' + t('Огляд') + '</button><button class="btn btn-primary" id="startBtn"><iconify-icon icon="solar:play-circle-bold"></iconify-icon> ' + tf('Продовжити · {0}/10', done) + '</button>'
+            : '<button class="btn btn-primary" id="startBtn">' + t('Розпочати') + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
         $('#startBtn').onclick = function () {
             var first = 0;
             for (var i = 0; i < QUESTIONS.length; i++) { if (!isAnswered('q' + QUESTIONS[i].n)) { first = i; break; } }
@@ -469,19 +599,19 @@
             : '';
         var codeOpts = COUNTRY_CODES.map(function (cc) { return '<option value="' + cc.c + '">' + cc.f + ' ' + cc.c + '</option>'; }).join('');
         app.innerHTML =
-            topChrome('Контакти') +
+            topChrome(t('Контакти')) +
             '<div class="card">' +
-                '<div class="eyebrow">Перед початком</div>' +
-                '<h2 class="qtitle">Ваші контакти</h2>' +
-                '<p class="help">Лишіть контакти, щоб ми могли звʼязатися щодо стратегічної сесії.</p>' +
+                '<div class="eyebrow">' + t('Перед початком') + '</div>' +
+                '<h2 class="qtitle">' + t('Ваші контакти') + '</h2>' +
+                '<p class="help">' + t('Лишіть контакти, щоб ми могли звʼязатися щодо стратегічної сесії.') + '</p>' +
                 tgLine +
-                '<div class="field"><label>Імʼя <span class="req">*</span></label><input id="cName" type="text" value="' + esc(defName) + '" placeholder="Як до вас звертатися"></div>' +
+                '<div class="field"><label>' + t('Імʼя') + ' <span class="req">*</span></label><input id="cName" type="text" value="' + esc(defName) + '" placeholder="' + t('Як до вас звертатися') + '"></div>' +
                 '<div class="field"><label>Email <span class="req">*</span></label><input id="cEmail" type="email" inputmode="email" value="' + esc(c.email || '') + '" placeholder="you@example.com"></div>' +
-                '<div class="field"><label>Телефон <span class="req">*</span></label><div class="phone-row"><select id="cCode" class="phone-code">' + codeOpts + '</select><input id="cPhone" type="tel" inputmode="tel" placeholder="номер телефону"></div></div>' +
-                '<div class="field"><label>Соцмережі</label><input id="cSocials" type="text" value="' + esc(c.socials || '@') + '" placeholder="напишіть нік"></div>' +
-                '<p class="help" style="font-size:12px;margin-top:14px">Обовʼязково: імʼя, email і телефон. Соцмережі — за бажанням.</p>' +
+                '<div class="field"><label>' + t('Телефон') + ' <span class="req">*</span></label><div class="phone-row"><select id="cCode" class="phone-code">' + codeOpts + '</select><input id="cPhone" type="tel" inputmode="tel" placeholder="' + t('номер телефону') + '"></div></div>' +
+                '<div class="field"><label>' + t('Соцмережі') + '</label><input id="cSocials" type="text" value="' + esc(c.socials || '@') + '" placeholder="' + t('напишіть нік') + '"></div>' +
+                '<p class="help" style="font-size:12px;margin-top:14px">' + t('Обовʼязково: імʼя, email і телефон. Соцмережі — за бажанням.') + '</p>' +
             '</div>';
-        setBar('<button class="btn btn-primary" id="cNext">Перейти до питань <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
+        setBar('<button class="btn btn-primary" id="cNext">' + t('Перейти до питань') + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>');
         var codeSel = $('#cCode'), phoneInp = $('#cPhone');
         if (c.phone) {
             var matched = '';
@@ -503,11 +633,11 @@
                 phone: pnat ? (codeSel.value + ' ' + pnat) : '',
                 socials: soc
             };
-            if (!data.name) { toast('Вкажіть імʼя'); return; }
-            if (!/.+@.+\..+/.test(data.email)) { toast('Вкажіть коректний email'); return; }
-            if (!pnat) { toast('Вкажіть номер телефону'); return; }
+            if (!data.name) { toast(t('Вкажіть імʼя')); return; }
+            if (!/.+@.+\..+/.test(data.email)) { toast(t('Вкажіть коректний email')); return; }
+            if (!pnat) { toast(t('Вкажіть номер телефону')); return; }
             saveContacts(data);
-            if (Sync.enabled) Sync.saveContact(data).catch(function () { toast('Не вдалося зберегти контакти — перевірте бекенд'); });
+            if (Sync.enabled) Sync.saveContact(data).catch(function () { toast(t('Не вдалося зберегти контакти — перевірте бекенд')); });
             haptic('ok');
             goTo('overview');
         };
@@ -519,31 +649,31 @@
             ? '<div class="list">' + a.voices.map(function (v, i) {
                 return '<div class="row">' +
                     '<button class="icon-btn" data-play data-clip="' + v.id + '"><iconify-icon icon="solar:play-bold"></iconify-icon></button>' +
-                    '<div class="meta"><span class="ln1">Запис #' + (i + 1) + '</span>' +
+                    '<div class="meta"><span class="ln1">' + tf('Запис #{0}', i + 1) + '</span>' +
                     '<div class="ln2">' + fmtTime(v.dur || 0) + '</div></div>' +
                     '<button class="del" data-delvoice="' + v.id + '"><iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon></button>' +
                 '</div>';
             }).join('') + '</div>'
             : '';
         app.innerHTML =
-            topChrome('Опис продукту') +
+            topChrome(t('Опис продукту')) +
             '<div class="card">' +
-                '<div class="eyebrow">Почнімо з головного</div>' +
-                '<h2 class="qtitle">Розкажіть про продукт своїми словами</h2>' +
-                '<p class="help">Перед детальними питаннями просто опишіть голосом, про що ваш продукт і навіщо ви його робите — як відчуваєте самі, без деталізації. Можна одне чи кілька повідомлень, будь-якої довжини. Далі перейдемо до конкретних питань.</p>' +
+                '<div class="eyebrow">' + t('Почнімо з головного') + '</div>' +
+                '<h2 class="qtitle">' + t('Розкажіть про продукт своїми словами') + '</h2>' +
+                '<p class="help">' + t('Перед детальними питаннями просто опишіть голосом, про що ваш продукт і навіщо ви його робите — як відчуваєте самі, без деталізації. Можна одне чи кілька повідомлень, будь-якої довжини. Далі перейдемо до конкретних питань.') + '</p>' +
                 '<div class="block">' +
-                    '<div class="block-label"><iconify-icon icon="solar:microphone-3-linear"></iconify-icon>Голосовий опис</div>' +
+                    '<div class="block-label"><iconify-icon icon="solar:microphone-3-linear"></iconify-icon>' + t('Голосовий опис') + '</div>' +
                     '<div class="rec-wrap" id="recWrap">' +
                         '<button class="rec" id="recBtn"><iconify-icon icon="solar:microphone-3-bold"></iconify-icon></button>' +
                         '<div class="eq"><i></i><i></i><i></i><i></i><i></i></div>' +
-                        '<div class="rec-hint" id="recHint">Натисніть, щоб записати голосову</div>' +
+                        '<div class="rec-hint" id="recHint">' + t('Натисніть, щоб записати голосову') + '</div>' +
                     '</div>' +
                     voicesHtml +
                 '</div>' +
             '</div>';
         setBar(
-            '<button class="btn btn-ghost narrow" id="goReview"><iconify-icon icon="solar:checklist-minimalistic-linear"></iconify-icon> Огляд</button>' +
-            '<button class="btn btn-primary" id="ovNext">До питань <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
+            '<button class="btn btn-ghost narrow" id="goReview"><iconify-icon icon="solar:checklist-minimalistic-linear"></iconify-icon> ' + t('Огляд') + '</button>' +
+            '<button class="btn btn-primary" id="ovNext">' + t('До питань') + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
         );
         setRecState();
         $('#recBtn').onclick = function () { if (rec.active) stopRecording(false); else startRecording(qid); };
@@ -561,7 +691,7 @@
             ? '<div class="list">' + a.voices.map(function (v, i) {
                 return '<div class="row">' +
                     '<button class="icon-btn" data-play data-clip="' + v.id + '"><iconify-icon icon="solar:play-bold"></iconify-icon></button>' +
-                    '<div class="meta"><span class="ln1">Запис #' + (i + 1) + '</span>' +
+                    '<div class="meta"><span class="ln1">' + tf('Запис #{0}', i + 1) + '</span>' +
                     '<div class="ln2">' + fmtTime(v.dur || 0) + '</div></div>' +
                     '<button class="del" data-delvoice="' + v.id + '"><iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon></button>' +
                 '</div>';
@@ -582,37 +712,37 @@
         var linkBlock =
             '<div class="block">' +
                 '<div class="block-label"><iconify-icon icon="' + (wantsVideo ? 'solar:videocamera-record-linear' : 'solar:link-linear') + '"></iconify-icon>' +
-                    (wantsVideo ? 'Посилання та відео' : 'Посилання') + '</div>' +
-                (q.linkHint ? '<p class="link-hint">' + esc(q.linkHint) + '</p>' : '') +
+                    (wantsVideo ? t('Посилання та відео') : t('Посилання')) + '</div>' +
+                (q.linkHint ? '<p class="link-hint">' + esc(t(q.linkHint)) + '</p>' : '') +
                 linksHtml +
                 '<div class="adder">' +
-                    '<input id="linkInput" type="url" inputmode="url" placeholder="Вставте посилання">' +
-                    '<button id="linkAdd"><iconify-icon icon="mdi:plus"></iconify-icon> Додати</button>' +
+                    '<input id="linkInput" type="url" inputmode="url" placeholder="' + t('Вставте посилання') + '">' +
+                    '<button id="linkAdd"><iconify-icon icon="mdi:plus"></iconify-icon> ' + t('Додати') + '</button>' +
                 '</div>' +
             '</div>';
 
         var hintHtml = q.hint ? (
             '<a class="hint" href="' + esc(q.hint.url) + '" target="_blank" rel="noopener">' +
                 '<span class="hint-ic"><img class="hint-logo" src="aura.svg" alt="Aura"></span>' +
-                '<span class="hint-body"><span class="hint-text">' + esc(q.hint.text) + '</span>' +
-                '<span class="hint-link">' + esc(q.hint.label) + ' <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></span></span>' +
+                '<span class="hint-body"><span class="hint-text">' + esc(t(q.hint.text)) + '</span>' +
+                '<span class="hint-link">' + esc(t(q.hint.label)) + ' <iconify-icon icon="solar:arrow-right-up-linear"></iconify-icon></span></span>' +
             '</a>'
         ) : '';
 
         var last = idx === QUESTIONS.length - 1;
         app.innerHTML =
-            topChrome('Питання ' + q.n + ' з ' + QUESTIONS.length) +
+            topChrome(tf('Питання {0} з {1}', q.n, QUESTIONS.length)) +
             '<div class="card">' +
-                '<div class="eyebrow"><span class="qnum">' + (q.n < 10 ? '0' + q.n : q.n) + '</span> · Питання</div>' +
-                '<h2 class="qtitle">' + esc(q.title) + '</h2>' +
-                '<p class="help">' + esc(q.help) + '</p>' +
+                '<div class="eyebrow"><span class="qnum">' + (q.n < 10 ? '0' + q.n : q.n) + '</span> · ' + t('Питання') + '</div>' +
+                '<h2 class="qtitle">' + esc(t(q.title)) + '</h2>' +
+                '<p class="help">' + esc(t(q.help)) + '</p>' +
 
                 '<div class="block">' +
-                    '<div class="block-label"><iconify-icon icon="solar:microphone-3-linear"></iconify-icon>Голосова відповідь</div>' +
+                    '<div class="block-label"><iconify-icon icon="solar:microphone-3-linear"></iconify-icon>' + t('Голосова відповідь') + '</div>' +
                     '<div class="rec-wrap" id="recWrap">' +
                         '<button class="rec" id="recBtn"><iconify-icon icon="solar:microphone-3-bold"></iconify-icon></button>' +
                         '<div class="eq"><i></i><i></i><i></i><i></i><i></i></div>' +
-                        '<div class="rec-hint" id="recHint">Натисніть, щоб записати голосову</div>' +
+                        '<div class="rec-hint" id="recHint">' + t('Натисніть, щоб записати голосову') + '</div>' +
                     '</div>' +
                     voicesHtml +
                 '</div>' +
@@ -623,8 +753,8 @@
 
         setBar(
             '<button class="btn btn-ghost narrow" id="prevBtn"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>' +
-            '<button class="btn btn-ghost narrow" id="goReview"><iconify-icon icon="solar:checklist-minimalistic-linear"></iconify-icon> Огляд</button>' +
-            '<button class="btn btn-primary" id="nextBtn">' + (last ? 'До огляду' : 'Далі') + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
+            '<button class="btn btn-ghost narrow" id="goReview"><iconify-icon icon="solar:checklist-minimalistic-linear"></iconify-icon> ' + t('Огляд') + '</button>' +
+            '<button class="btn btn-primary" id="nextBtn">' + (last ? t('До огляду') : t('Далі')) + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
         );
 
         setRecState();
@@ -658,38 +788,38 @@
         var items = QUESTIONS.map(function (q, i) {
             var qid = 'q' + q.n, a = ansFor(qid), ok = isAnswered(qid);
             var bits = [];
-            if (a.voices.length) bits.push(a.voices.length + ' ' + plural(a.voices.length, 'запис', 'записи', 'записів'));
-            if (a.links.length) bits.push(a.links.length + ' ' + plural(a.links.length, 'посилання', 'посилання', 'посилань'));
-            var sub = bits.length ? bits.join(' · ') : 'Ще не заповнено';
+            if (a.voices.length) bits.push(a.voices.length + ' ' + pl(a.voices.length, 'запис'));
+            if (a.links.length) bits.push(a.links.length + ' ' + pl(a.links.length, 'посилання'));
+            var sub = bits.length ? bits.join(' · ') : t('Ще не заповнено');
             return '<button class="rev-item" data-go="' + i + '">' +
                 '<span class="rev-badge ' + (ok ? 'done' : 'todo') + '">' + (ok ? '<iconify-icon icon="mdi:check-bold" width="16"></iconify-icon>' : q.n) + '</span>' +
-                '<span class="rev-main"><span class="rt">' + esc(q.title) + '</span><span class="rs">' + sub + '</span></span>' +
+                '<span class="rev-main"><span class="rt">' + esc(t(q.title)) + '</span><span class="rs">' + sub + '</span></span>' +
                 '<span class="go"><iconify-icon icon="solar:pen-2-linear"></iconify-icon></span>' +
             '</button>';
         }).join('');
         var ov = ansFor('q0'); var ovOk = ov.voices.length > 0;
-        var ovSub = ov.voices.length ? (ov.voices.length + ' ' + plural(ov.voices.length, 'запис', 'записи', 'записів')) : 'Ще не заповнено';
+        var ovSub = ov.voices.length ? (ov.voices.length + ' ' + pl(ov.voices.length, 'запис')) : t('Ще не заповнено');
         var ovItem = '<button class="rev-item" data-go="ov">' +
             '<span class="rev-badge ' + (ovOk ? 'done' : 'todo') + '">' + (ovOk ? '<iconify-icon icon="mdi:check-bold" width="16"></iconify-icon>' : '0') + '</span>' +
-            '<span class="rev-main"><span class="rt">Опис продукту</span><span class="rs">' + ovSub + '</span></span>' +
+            '<span class="rev-main"><span class="rt">' + t('Опис продукту') + '</span><span class="rs">' + ovSub + '</span></span>' +
             '<span class="go"><iconify-icon icon="solar:pen-2-linear"></iconify-icon></span>' +
         '</button>';
 
         var headHtml = sAt
             ? ('<div class="done-banner">' +
                    '<div class="db-ic"><iconify-icon icon="mdi:check-bold"></iconify-icon></div>' +
-                   '<div class="db-body"><div class="db-title">Бриф надіслано</div>' +
-                   '<p class="db-text">Дякуємо! Будь-які зміни, які ви додаєте далі — нові голосові чи посилання — ми отримуємо автоматично. Повторно надсилати нічого не потрібно.</p></div>' +
+                   '<div class="db-body"><div class="db-title">' + t('Бриф надіслано') + '</div>' +
+                   '<p class="db-text">' + t('Дякуємо! Будь-які зміни, які ви додаєте далі — нові голосові чи посилання — ми отримуємо автоматично. Повторно надсилати нічого не потрібно.') + '</p></div>' +
                '</div>')
-            : ('<div class="eyebrow">' + (all ? 'Майже готово' : 'Огляд') + '</div>' +
-               '<h2 class="qtitle">Перегляньте бриф</h2>' +
-               '<p class="help">' + (all ? 'Усе заповнено — можна надсилати бриф.' : ('Заповнено ' + done + ' із ' + total + '. Надіслати можна, коли заповните всі питання.')) + '</p>');
+            : ('<div class="eyebrow">' + (all ? t('Майже готово') : t('Огляд')) + '</div>' +
+               '<h2 class="qtitle">' + t('Перегляньте бриф') + '</h2>' +
+               '<p class="help">' + (all ? t('Усе заповнено — можна надсилати бриф.') : tf('Заповнено {0} із {1}. Надіслати можна, коли заповните всі питання.', done, total)) + '</p>');
 
         app.innerHTML =
-            topChrome('Огляд · ' + done + '/' + total) +
+            topChrome(tf('Огляд · {0}/{1}', done, total)) +
             '<div class="card">' + headHtml + '<div class="rev-list">' + ovItem + items + '</div></div>';
 
-        setBar((all && !sAt) ? '<button class="btn btn-primary" id="submitBtn">Надіслати бриф <iconify-icon icon="solar:plain-2-bold"></iconify-icon></button>' : '');
+        setBar((all && !sAt) ? '<button class="btn btn-primary" id="submitBtn">' + t('Надіслати бриф') + ' <iconify-icon icon="solar:plain-2-bold"></iconify-icon></button>' : '');
         document.querySelectorAll('[data-go]').forEach(function (it) { it.onclick = function () { var g = it.getAttribute('data-go'); goTo(g === 'ov' ? 'overview' : parseInt(g, 10)); }; });
         var sbtn = document.getElementById('submitBtn'); if (sbtn) sbtn.onclick = function () { submitBrief(); };
     }
@@ -698,10 +828,10 @@
         app.innerHTML =
             '<div class="card"><div class="done-wrap">' +
                 '<div class="done-ic"><iconify-icon icon="solar:check-read-linear"></iconify-icon></div>' +
-                '<h2 class="qtitle" style="margin-top:0">Бриф надіслано</h2>' +
-                '<p class="help" style="margin-left:auto;margin-right:auto;max-width:34ch">Дякуємо за підтвердження! Ми вивчимо матеріали й підготуємось до стратегічної сесії. Будь-які зміни, які ви додасте далі, ми отримаємо автоматично — повторно надсилати не потрібно.</p>' +
+                '<h2 class="qtitle" style="margin-top:0">' + t('Бриф надіслано') + '</h2>' +
+                '<p class="help" style="margin-left:auto;margin-right:auto;max-width:34ch">' + t('Дякуємо за підтвердження! Ми вивчимо матеріали й підготуємось до стратегічної сесії. Будь-які зміни, які ви додасте далі, ми отримаємо автоматично — повторно надсилати не потрібно.') + '</p>' +
             '</div></div>';
-        setBar('<button class="btn btn-ghost" id="reopen">Відкрити бриф знову</button>');
+        setBar('<button class="btn btn-ghost" id="reopen">' + t('Відкрити бриф знову') + '</button>');
         $('#reopen').onclick = function () { goTo(10); };
     }
 
@@ -745,8 +875,8 @@
     ansFor('q0');
     QUESTIONS.forEach(function (q) { ansFor('q' + q.n); });
     if (Sync.enabled) {
-        app.innerHTML = '<div class="card" style="margin-top:24px"><p class="help">Завантаження брифу…</p></div>';
-        Sync.getBrief().then(function (d) { if (d && d.exists) hydrate(d); state.pos = entryPos(); render(); }).catch(function () { toast('Бриф не завантажився — перевірте функцію save'); state.pos = entryPos(); render(); });
+        app.innerHTML = '<div class="card" style="margin-top:24px"><p class="help">' + t('Завантаження брифу…') + '</p></div>';
+        Sync.getBrief().then(function (d) { if (d && d.exists) hydrate(d); state.pos = entryPos(); render(); }).catch(function () { toast(t('Бриф не завантажився — перевірте функцію save')); state.pos = entryPos(); render(); });
     } else {
         state.pos = entryPos();
         render();
