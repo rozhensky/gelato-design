@@ -131,3 +131,19 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', check);
     check();
 })();
+
+
+// ===== Dynamic "open slots": fewer as the month progresses, resets monthly =====
+(function () {
+    var now = new Date();
+    var slots = Math.max(1, 5 - Math.ceil(now.getDate() / 7)); // wk1=4, wk2=3, wk3=2, wk4+=1
+    var m = now.getMonth();
+    var accus = ['січень', 'лютий', 'березень', 'квітень', 'травень', 'червень', 'липень', 'серпень', 'вересень', 'жовтень', 'листопад', 'грудень'];
+    var locat = ['січні', 'лютому', 'березні', 'квітні', 'травні', 'червні', 'липні', 'серпні', 'вересні', 'жовтні', 'листопаді', 'грудні'];
+    function plMisce(n) { var d = n % 10, h = n % 100; if (d === 1 && h !== 11) return 'місце'; if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return 'місця'; return 'місць'; }
+    function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+    set('slotsNum', String(slots));
+    set('slotsLabel', 'місця на ' + accus[m]);
+    set('heroSlots', slots + ' ' + plMisce(slots));
+    set('heroSlotsCap', 'відкрито до співпраці в ' + locat[m]);
+})();
