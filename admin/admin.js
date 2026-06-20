@@ -165,6 +165,19 @@
     ];
     var contactHtml = '<div class="contacts">' + cinfo.map(function (c) { return '<div class="crow"><span class="ck">' + c[0] + '</span><span class="cv">' + c[1] + "</span></div>"; }).join("") + "</div>";
 
+    var ov0 = vByQ[0] || [];
+    var ovHtml = "";
+    if (ov0.length) {
+      var ovInner = "";
+      ov0.forEach(function (v, i) {
+        ovInner += '<div class="voice"><div class="vh"><span class="muted" style="font-size:12.5px;min-width:74px">Запис ' + (i + 1) + '</span>' +
+          (v._url ? '<audio controls preload="none" src="' + esc(v._url) + '"></audio>' : '<span class="muted">аудіо недоступне</span>') + "</div>" +
+          (v.transcript ? '<div class="tx">' + esc(v.transcript) + "</div>" : '<div class="pending"><iconify-icon icon="solar:clock-circle-linear"></iconify-icon> транскрипт ще готується…</div>') +
+          "</div>";
+      });
+      ovHtml = '<div class="qblock"><div class="qhead"><span class="qn">00</span><span class="qt">Опис продукту (своїми словами)</span></div>' + ovInner + "</div>";
+    }
+
     var blocks = QTITLES.map(function (title, idx) {
       var n = idx + 1;
       var vs = vByQ[n] || [], ls = lByQ[n] || [];
@@ -191,7 +204,7 @@
       (brief.status === "submitted" ? '<span class="pill sub">Надіслано</span>' : '<span class="pill prog">В процесі</span>') + "</div>" +
       '<p class="muted" style="font-size:13px">' + (brief.tg_username ? "@" + esc(brief.tg_username) + " · " : "") + esc(brief.account_id) + " · оновлено " + fmtDate(brief.updated_at) + "</p>" +
       contactHtml +
-      '<div style="margin-top:14px">' + blocks + "</div></div>";
+      '<div style="margin-top:14px">' + ovHtml + blocks + "</div></div>";
 
     document.getElementById("back").onclick = function () { renderList(); };
     document.getElementById("export").onclick = function () { exportBrief(); };
@@ -227,6 +240,24 @@
         (brief.socials ? "- Соцмережі: " + brief.socials + "\n" : "") +
         "- Статус: " + brief.status + "\n- Оновлено: " + brief.updated_at + "\n\n---\n\n";
       var json = { account: brief.account_id, contact_name: brief.contact_name, email: brief.email, phone: brief.phone, socials: brief.socials, tg_name: brief.tg_name, tg_username: brief.tg_username, status: brief.status, questions: [] };
+
+      var ov = current.vByQ[0] || [];
+      if (ov.length) {
+        md += "## 0. Опис продукту (своїми словами)\n\n";
+        var ovjson = { n: 0, title: "Опис продукту", transcripts: [], audio: [] };
+        for (var oi = 0; oi < ov.length; oi++) {
+          var ovv = ov[oi];
+          var ovext = (ovv.storage_path.split(".").pop() || "webm").toLowerCase();
+          var ovfname = "audio/overview-" + (oi + 1) + "." + ovext;
+          if (ovv.transcript) md += "**Запис " + (oi + 1) + ":** " + ovv.transcript + "\n\n";
+          else md += "**Запис " + (oi + 1) + ":** _(транскрипт ще не готовий — див. " + ovfname + ")_\n\n";
+          ovjson.transcripts.push(ovv.transcript || null);
+          ovjson.audio.push(ovfname);
+          try { if (ovv._url) { var ovresp = await fetch(ovv._url); zip.file(root + "/" + ovfname, await ovresp.arrayBuffer()); } } catch (e) {}
+        }
+        json.questions.push(ovjson);
+        md += "---\n\n";
+      }
 
       for (var n = 1; n <= QTITLES.length; n++) {
         md += "## " + n + ". " + QTITLES[n - 1] + "\n\n";

@@ -222,7 +222,7 @@
         };
     })();
 
-    function qMeta(qid) { var n = parseInt(qid.slice(1), 10); return { n: n, title: (QUESTIONS[n - 1] || {}).title || '' }; }
+    function qMeta(qid) { var n = parseInt(qid.slice(1), 10); if (n === 0) return { n: 0, title: 'Опис продукту' }; return { n: n, title: (QUESTIONS[n - 1] || {}).title || '' }; }
     function syncVoice(qid, clip) {
         if (!Sync.enabled) return;
         var m = qMeta(qid);
@@ -251,7 +251,7 @@
 
     function setBackButton() {
         if (!tg || !tg.BackButton) return;
-        var show = state.pos === 'contact' || (state.pos >= 1 && state.pos <= 10);
+        var show = state.pos === 'contact' || (state.pos >= 0 && state.pos <= 10);
         if (show) tgCall(function () { tg.BackButton.show(); });
         else tgCall(function () { tg.BackButton.hide(); });
     }
@@ -260,7 +260,8 @@
     function goBack() {
         stopRecording(true);
         if (state.pos === 'contact') { state.pos = -1; render(); return; }
-        if (state.pos === 0) return; // first question — no way back to intro/contacts
+        if (state.pos === 'overview') return; // first content step — no way back to contacts
+        if (state.pos === 0) { state.pos = 'overview'; render(); return; }
         if (state.pos >= 1 && state.pos <= 10) { state.pos -= 1; render(); }
     }
     function goTo(pos) { stopRecording(true); state.pos = pos; window.scrollTo(0, 0); render(); }
@@ -323,7 +324,7 @@
         persist(qid);
         syncVoice(qid, clip);
         haptic('ok');
-        if (state.pos >= 0 && state.pos <= 9 && 'q' + QUESTIONS[state.pos].n === qid) render();
+        if ((state.pos === 'overview' && qid === 'q0') || (state.pos >= 0 && state.pos <= 9 && 'q' + QUESTIONS[state.pos].n === qid)) render();
     }
 
     // sets the button icon/classes ONCE per state change (no re-render on the timer tick → no flicker)
@@ -420,6 +421,7 @@
     function render() {
         setBackButton();
         if (state.pos === 'contact') return renderContact();
+        if (state.pos === 'overview') return renderOverview();
         if (state.pos === -1) return renderIntro();
         if (state.pos >= 0 && state.pos <= 9) return renderQuestion(state.pos);
         if (state.pos === 10) return renderReview();
@@ -507,10 +509,48 @@
             saveContacts(data);
             if (Sync.enabled) Sync.saveContact(data).catch(function () { toast('Не вдалося зберегти контакти — перевірте бекенд'); });
             haptic('ok');
-            var first = 0;
-            for (var i = 0; i < QUESTIONS.length; i++) { if (!isAnswered('q' + QUESTIONS[i].n)) { first = i; break; } }
-            goTo(first);
+            goTo('overview');
         };
+    }
+
+    function renderOverview() {
+        var qid = 'q0', a = ansFor(qid);
+        var voicesHtml = a.voices.length
+            ? '<div class="list">' + a.voices.map(function (v, i) {
+                return '<div class="row">' +
+                    '<button class="icon-btn" data-play data-clip="' + v.id + '"><iconify-icon icon="solar:play-bold"></iconify-icon></button>' +
+                    '<div class="meta"><span class="ln1">Запис #' + (i + 1) + '</span>' +
+                    '<div class="ln2">' + fmtTime(v.dur || 0) + '</div></div>' +
+                    '<button class="del" data-delvoice="' + v.id + '"><iconify-icon icon="solar:trash-bin-trash-linear"></iconify-icon></button>' +
+                '</div>';
+            }).join('') + '</div>'
+            : '';
+        app.innerHTML =
+            topChrome('Опис продукту') +
+            '<div class="card">' +
+                '<div class="eyebrow">Почнімо з головного</div>' +
+                '<h2 class="qtitle">Розкажіть про продукт своїми словами</h2>' +
+                '<p class="help">Перед детальними питаннями просто опишіть голосом, про що ваш продукт і навіщо ви його робите — як відчуваєте самі, без деталізації. Можна одне чи кілька повідомлень, будь-якої довжини. Далі перейдемо до конкретних питань.</p>' +
+                '<div class="block">' +
+                    '<div class="block-label"><iconify-icon icon="solar:microphone-3-linear"></iconify-icon>Голосовий опис</div>' +
+                    '<div class="rec-wrap" id="recWrap">' +
+                        '<button class="rec" id="recBtn"><iconify-icon icon="solar:microphone-3-bold"></iconify-icon></button>' +
+                        '<div class="eq"><i></i><i></i><i></i><i></i><i></i></div>' +
+                        '<div class="rec-hint" id="recHint">Натисніть, щоб записати голосову</div>' +
+                    '</div>' +
+                    voicesHtml +
+                '</div>' +
+            '</div>';
+        setBar(
+            '<button class="btn btn-ghost narrow" id="goReview"><iconify-icon icon="solar:checklist-minimalistic-linear"></iconify-icon> Огляд</button>' +
+            '<button class="btn btn-primary" id="ovNext">До питань <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
+        );
+        setRecState();
+        $('#recBtn').onclick = function () { if (rec.active) stopRecording(false); else startRecording(qid); };
+        document.querySelectorAll('[data-play]').forEach(function (b) { b.onclick = function () { togglePlay(qid, b.getAttribute('data-clip')); }; });
+        document.querySelectorAll('[data-delvoice]').forEach(function (b) { b.onclick = function () { deleteVoice(qid, b.getAttribute('data-delvoice')); }; });
+        $('#goReview').onclick = function () { goTo(10); };
+        $('#ovNext').onclick = function () { goTo(0); };
     }
 
     function renderQuestion(idx) {
@@ -583,7 +623,7 @@
             '</div>';
 
         setBar(
-            (idx > 0 ? '<button class="btn btn-ghost narrow" id="prevBtn"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>' : '') +
+            '<button class="btn btn-ghost narrow" id="prevBtn"><iconify-icon icon="solar:arrow-left-linear"></iconify-icon></button>' +
             '<button class="btn btn-ghost narrow" id="goReview"><iconify-icon icon="solar:checklist-minimalistic-linear"></iconify-icon> Огляд</button>' +
             '<button class="btn btn-primary" id="nextBtn">' + (last ? 'До огляду' : 'Далі') + ' <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></button>'
         );
@@ -608,7 +648,7 @@
             $('#linkAdd').onclick = doAdd;
             inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doAdd(); } });
         }
-        var pv = document.getElementById('prevBtn'); if (pv) pv.onclick = function () { goTo(idx - 1); };
+        var pv = document.getElementById('prevBtn'); if (pv) pv.onclick = function () { goTo(idx === 0 ? 'overview' : idx - 1); };
         $('#goReview').onclick = function () { goTo(10); };
         $('#nextBtn').onclick = function () { goTo(idx + 1 > 9 ? 10 : idx + 1); };
     }
@@ -630,6 +670,13 @@
                 '<span class="go"><iconify-icon icon="solar:pen-2-linear"></iconify-icon></span>' +
             '</button>';
         }).join('');
+        var ov = ansFor('q0'); var ovOk = ov.voices.length > 0;
+        var ovSub = ov.voices.length ? (ov.voices.length + ' ' + plural(ov.voices.length, 'запис', 'записи', 'записів')) : 'Ще не заповнено';
+        var ovItem = '<button class="rev-item" data-go="ov">' +
+            '<span class="rev-badge ' + (ovOk ? 'done' : 'todo') + '">' + (ovOk ? '<iconify-icon icon="mdi:check-bold" width="16"></iconify-icon>' : '0') + '</span>' +
+            '<span class="rev-main"><span class="rt">Опис продукту</span><span class="rs">' + ovSub + '</span></span>' +
+            '<span class="go"><iconify-icon icon="solar:pen-2-linear"></iconify-icon></span>' +
+        '</button>';
 
         var headHtml = sAt
             ? ('<div class="done-banner">' +
@@ -643,10 +690,10 @@
 
         app.innerHTML =
             topChrome('Огляд · ' + done + '/' + total) +
-            '<div class="card">' + headHtml + '<div class="rev-list">' + items + '</div></div>';
+            '<div class="card">' + headHtml + '<div class="rev-list">' + ovItem + items + '</div></div>';
 
         setBar((all && !sAt) ? '<button class="btn btn-primary" id="submitBtn">Надіслати бриф <iconify-icon icon="solar:plain-2-bold"></iconify-icon></button>' : '');
-        document.querySelectorAll('[data-go]').forEach(function (it) { it.onclick = function () { goTo(parseInt(it.getAttribute('data-go'), 10)); }; });
+        document.querySelectorAll('[data-go]').forEach(function (it) { it.onclick = function () { var g = it.getAttribute('data-go'); goTo(g === 'ov' ? 'overview' : parseInt(g, 10)); }; });
         var sbtn = document.getElementById('submitBtn'); if (sbtn) sbtn.onclick = function () { submitBrief(); };
     }
 
@@ -680,21 +727,25 @@
         if (d.contact && d.contact.name) CONTACTS = d.contact;
         SUBMITTED = d.status === 'submitted';
         (d.voices || []).forEach(function (v) {
-            if (!v.q) return;
+            if (v.q == null) return;
             ansFor('q' + v.q).voices.push({ id: v.id, remoteId: v.id, url: v.url, dur: v.dur || 0, mime: v.mime, transcript: v.transcript });
         });
         (d.links || []).forEach(function (l) {
-            if (!l.q) return;
+            if (l.q == null) return;
             ansFor('q' + l.q).links.push({ id: l.id, remoteId: l.id, url: l.url, kind: l.kind });
         });
     }
 
     function entryPos() {
         if (!contactsDone()) return -1; // new user -> intro -> contacts
-        for (var i = 0; i < QUESTIONS.length; i++) { if (!isAnswered('q' + QUESTIONS[i].n)) return i; }
+        var any = isAnswered('q0');
+        for (var i = 0; i < QUESTIONS.length; i++) { if (isAnswered('q' + QUESTIONS[i].n)) any = true; }
+        if (!any) return 'overview'; // fresh after contacts -> product description first
+        for (var j = 0; j < QUESTIONS.length; j++) { if (!isAnswered('q' + QUESTIONS[j].n)) return j; }
         return 10; // everything answered -> review
     }
 
+    ansFor('q0');
     QUESTIONS.forEach(function (q) { ansFor('q' + q.n); });
     if (Sync.enabled) {
         app.innerHTML = '<div class="card" style="margin-top:24px"><p class="help">Завантаження брифу…</p></div>';
