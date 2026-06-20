@@ -138,12 +138,23 @@ document.addEventListener('DOMContentLoaded', () => {
     var now = new Date();
     var slots = Math.max(1, 5 - Math.ceil(now.getDate() / 7)); // wk1=4, wk2=3, wk3=2, wk4+=1
     var m = now.getMonth();
-    var accus = ['січень', 'лютий', 'березень', 'квітень', 'травень', 'червень', 'липень', 'серпень', 'вересень', 'жовтень', 'листопад', 'грудень'];
-    var locat = ['січні', 'лютому', 'березні', 'квітні', 'травні', 'червні', 'липні', 'серпні', 'вересні', 'жовтні', 'листопаді', 'грудні'];
-    function plMisce(n) { var d = n % 10, h = n % 100; if (d === 1 && h !== 11) return 'місце'; if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return 'місця'; return 'місць'; }
+    var ru = (window.GELATO_LANG === 'ru');
     function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
-    set('slotsNum', String(slots));
-    set('slotsLabel', 'місця на ' + accus[m]);
-    set('heroSlots', slots + ' ' + plMisce(slots));
-    set('heroSlotsCap', 'відкрито до співпраці в ' + locat[m]);
+    if (ru) {
+        var accusR = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
+        var locatR = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне', 'июле', 'августе', 'сентябре', 'октябре', 'ноябре', 'декабре'];
+        var plMesto = function (n) { var d = n % 10, h = n % 100; if (d === 1 && h !== 11) return 'место'; if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return 'места'; return 'мест'; };
+        set('slotsNum', String(slots));
+        set('slotsLabel', 'места на ' + accusR[m]);
+        set('heroSlots', slots + ' ' + plMesto(slots));
+        set('heroSlotsCap', 'открыто к сотрудничеству в ' + locatR[m]);
+    } else {
+        var accus = ['січень', 'лютий', 'березень', 'квітень', 'травень', 'червень', 'липень', 'серпень', 'вересень', 'жовтень', 'листопад', 'грудень'];
+        var locat = ['січні', 'лютому', 'березні', 'квітні', 'травні', 'червні', 'липні', 'серпні', 'вересні', 'жовтні', 'листопаді', 'грудні'];
+        var plMisce = function (n) { var d = n % 10, h = n % 100; if (d === 1 && h !== 11) return 'місце'; if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return 'місця'; return 'місць'; };
+        set('slotsNum', String(slots));
+        set('slotsLabel', 'місця на ' + accus[m]);
+        set('heroSlots', slots + ' ' + plMisce(slots));
+        set('heroSlotsCap', 'відкрито до співпраці в ' + locat[m]);
+    }
 })();

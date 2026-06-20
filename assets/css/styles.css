@@ -58,6 +58,13 @@ html, body { overflow-x: hidden; }
 }
 .mvp:hover::after, .mvp:focus::after { opacity: 1; visibility: visible; transform: translateX(-50%); }
 .mvp:hover::before, .mvp:focus::before { opacity: 1; visibility: visible; }
+html[lang="ru"] .mvp::after { content: "MVP — это первая версия продукта с базовым набором функций. Ею уже можно реально пользоваться и получить от продукта главную ценность — то, ради чего он и нужен."; }
+
+/* Language switch (footer) */
+.lang-switch { letter-spacing: normal; }
+.lang-btn { font: inherit; font-size: 11px; line-height: 1; text-transform: uppercase; letter-spacing: 0.06em; color: #a8a29e; background: none; border: 0; padding: 3px 6px; cursor: pointer; border-radius: 5px; transition: color .15s ease, background .15s ease; }
+.lang-btn:hover { color: #57534e; }
+.lang-btn.is-active { color: #E65C00; font-weight: 600; }
 
 /* Larger spacing between sections on desktop (lg:mt-5 -> 4.25rem) */
 @media (min-width: 1024px) {
