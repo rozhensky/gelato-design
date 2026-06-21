@@ -4,15 +4,19 @@
 Telegram, і як встановлюваний PWA. Філософія — «той самий код, інша оболонка»:
 Telegram дає ідентичність і нативний UI, коли він є; інакше — веб-фолбек.
 
+## Потрібен лише промпт
+Достатньо `PROMPT.md` — самодостатній текст, який вставляєш у Claude Code, і агент
+сам згенерує всі файли. Решта файлів нижче — це готова еталонна реалізація «про запас»;
+носити їх НЕ обов'язково.
+
 ## Файли
-- `platform.js` — адаптер. Замість `window.Telegram.WebApp.*` код викликає `Platform.*`,
-  а адаптер маршрутизує у Telegram SDK або у веб-фолбек. Підключати першим.
-- `manifest.json` — «паспорт» PWA (назва, іконки, кольори, `display: standalone`).
-- `sw.js` — service worker: stale-while-revalidate для свого origin, обхід для Supabase/API.
-- `PROMPT.md` — промпт для Claude Code: вперед (TMA → TMA+PWA) і назад (→ TMA-only).
+- `PROMPT.md` — **головне.** Промпт для Claude Code: вперед (TMA → TMA+PWA) і назад (→ TMA-only).
+- `platform.js` — *(опційно, еталон)* адаптер: замість `window.Telegram.WebApp.*` код кличе `Platform.*`.
+- `manifest.json` — *(опційно, еталон)* «паспорт» PWA.
+- `sw.js` — *(опційно, еталон)* service worker.
 
 ## Як застосувати
-1. Відкрий Claude Code в корені проєкту.
+1. Відкрий Claude Code в корені проєкту з Telegram Mini App.
 2. Встав вміст `PROMPT.md`.
 3. Перевір за критеріями приймання в обох контекстах (Telegram і браузер).
 
