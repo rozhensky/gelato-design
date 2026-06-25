@@ -138,9 +138,16 @@ document.addEventListener('DOMContentLoaded', () => {
     var now = new Date();
     var slots = Math.max(1, 5 - Math.ceil(now.getDate() / 7)); // wk1=4, wk2=3, wk3=2, wk4+=1
     var m = now.getMonth();
-    var ru = (window.GELATO_LANG === 'ru');
+    var L = window.GELATO_LANG || 'uk';
     function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
-    if (ru) {
+    if (L === 'en') {
+        var monthE = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        var plSpot = function (n) { return n === 1 ? 'spot' : 'spots'; };
+        set('slotsNum', String(slots));
+        set('slotsLabel', 'spots for ' + monthE[m]);
+        set('heroSlots', slots + ' ' + plSpot(slots));
+        set('heroSlotsCap', 'open for collaboration in ' + monthE[m]);
+    } else if (L === 'ru') {
         var accusR = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
         var locatR = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне', 'июле', 'августе', 'сентябре', 'октябре', 'ноябре', 'декабре'];
         var plMesto = function (n) { var d = n % 10, h = n % 100; if (d === 1 && h !== 11) return 'место'; if (d >= 2 && d <= 4 && (h < 12 || h > 14)) return 'места'; return 'мест'; };

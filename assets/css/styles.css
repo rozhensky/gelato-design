@@ -59,6 +59,7 @@ html, body { overflow-x: hidden; }
 .mvp:hover::after, .mvp:focus::after { opacity: 1; visibility: visible; transform: translateX(-50%); }
 .mvp:hover::before, .mvp:focus::before { opacity: 1; visibility: visible; }
 html[lang="ru"] .mvp::after { content: "MVP — это первая версия продукта с базовым набором функций. Ею уже можно реально пользоваться и получить от продукта главную ценность — то, ради чего он и нужен."; }
+html[lang="en"] .mvp::after { content: "MVP is the first version of a product with a basic set of features. You can already really use it and get the product\2019s core value — the very thing it exists for."; }
 
 /* Language switch (footer) */
 .lang-switch { letter-spacing: normal; }
