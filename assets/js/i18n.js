@@ -329,24 +329,27 @@
     }
 
     function buildSwitch() {
-        var host = document.getElementById('langSwitch');
-        if (!host) return;
-        host.innerHTML = '';
+        var hosts = document.querySelectorAll('.lang-switch');
+        if (!hosts.length) return;
         var opts = [['uk', 'UA'], ['ru', 'RU'], ['en', 'EN']];
-        for (var i = 0; i < opts.length; i++) {
-            (function (code, label) {
-                var b = document.createElement('button');
-                b.type = 'button';
-                b.textContent = label;
-                b.className = 'lang-btn' + (lang === code ? ' is-active' : '');
-                b.setAttribute('aria-pressed', lang === code ? 'true' : 'false');
-                b.onclick = function () {
-                    if (lang === code) return;
-                    try { localStorage.setItem('gelatoLang', code); } catch (e) {}
-                    location.reload();
-                };
-                host.appendChild(b);
-            })(opts[i][0], opts[i][1]);
+        for (var h = 0; h < hosts.length; h++) {
+            var host = hosts[h];
+            host.innerHTML = '';
+            for (var i = 0; i < opts.length; i++) {
+                (function (code, label, host) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.textContent = label;
+                    b.className = 'lang-btn' + (lang === code ? ' is-active' : '');
+                    b.setAttribute('aria-pressed', lang === code ? 'true' : 'false');
+                    b.onclick = function () {
+                        if (lang === code) return;
+                        try { localStorage.setItem('gelatoLang', code); } catch (e) {}
+                        location.reload();
+                    };
+                    host.appendChild(b);
+                })(opts[i][0], opts[i][1], host);
+            }
         }
     }
 

@@ -66,6 +66,7 @@ Deno.serve(async (req) => {
     const text = (msg && typeof msg.text === "string") ? msg.text.trim() : "";
     // reply ONLY to /start — avoids greeting on every message
     if (msg && msg.chat && msg.chat.id && text.startsWith("/start")) {
+      console.log("bot /start lang_code:", (msg.from && msg.from.language_code) || "-");
       const w = pickWelcome(msg.from && msg.from.language_code);
       const p = tg("sendMessage", {
         chat_id: msg.chat.id,
