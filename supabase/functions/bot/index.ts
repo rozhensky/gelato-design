@@ -66,10 +66,13 @@ Deno.serve(async (req) => {
     const text = (msg && typeof msg.text === "string") ? msg.text.trim() : "";
     // reply ONLY to /start — avoids greeting on every message
     if (msg && msg.chat && msg.chat.id && text.startsWith("/start")) {
+      const rawCode = (msg.from && msg.from.language_code) || "—";
+      console.log("bot /start — from.language_code:", rawCode); // visible in Supabase function logs
       const w = pickWelcome(msg.from && msg.from.language_code);
       const p = tg("sendMessage", {
         chat_id: msg.chat.id,
-        text: w.text,
+        // TEMP DEBUG: shows which language_code Telegram sent. Remove after testing.
+        text: w.text + "\n\n· debug lang_code: " + rawCode,
         reply_markup: {
           inline_keyboard: [[{ text: w.btn, web_app: { url: APP_URL } }]],
         },
