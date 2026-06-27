@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>(function(){try{if(sessionStorage.getItem('gelatoLangSwitch')){if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){sessionStorage.removeItem('gelatoLangSwitch');return;}var d=document.documentElement;d.style.opacity='0';window.__gelatoReveal=function(){d.style.transition='opacity .32s ease';d.style.opacity='1';};setTimeout(function(){if(window.__gelatoReveal){window.__gelatoReveal();window.__gelatoReveal=null;}},1500);}}catch(e){}})();</script>
+    <script>(function(){try{if(sessionStorage.getItem('gelatoLangSwitch')){if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){sessionStorage.removeItem('gelatoLangSwitch');return;}document.documentElement.classList.add('lang-switching');setTimeout(function(){document.documentElement.classList.remove('lang-switching');},1800);}}catch(e){}})();</script>
     <title>Від ідеї до прототипу за 7 днів · Gelato Design</title>
     <meta name="description" content="Ви розповідаєте ідею, ми перетворюємо її на живий прототип, який можна показати аудиторії та інвесторам, а потім доводимо до робочого продукту через спринти.">
     <meta name="robots" content="index, follow">
@@ -30,7 +30,7 @@
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <link rel="stylesheet" href="assets/css/styles.css?v=12">
+    <link rel="stylesheet" href="assets/css/styles.css?v=13">
 
     <!-- ============ SEO: JSON-LD ============ -->
     <script type="application/ld+json">
@@ -717,7 +717,7 @@
         </div>
     </div>
 
-<script src="assets/js/i18n.js?v=5"></script>
+<script src="assets/js/i18n.js?v=6"></script>
 <script src="assets/js/main.js?v=15"></script>
 </body>
 </html>

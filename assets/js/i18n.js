@@ -348,10 +348,8 @@
                         var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                         if (rm) { location.reload(); return; }
                         try { sessionStorage.setItem('gelatoLangSwitch', '1'); } catch (e) {}
-                        var d = document.documentElement;
-                        d.style.transition = 'opacity .28s ease';
-                        d.style.opacity = '0';
-                        setTimeout(function () { location.reload(); }, 280);
+                        document.documentElement.classList.add('lang-switching');
+                        setTimeout(function () { location.reload(); }, 420);
                     };
                     host.appendChild(b);
                 })(opts[i][0], opts[i][1], host);
@@ -365,7 +363,7 @@
         try {
             if (sessionStorage.getItem('gelatoLangSwitch')) {
                 sessionStorage.removeItem('gelatoLangSwitch');
-                if (window.__gelatoReveal) requestAnimationFrame(function () { if (window.__gelatoReveal) { window.__gelatoReveal(); window.__gelatoReveal = null; } });
+                requestAnimationFrame(function () { document.documentElement.classList.remove('lang-switching'); });
             }
         } catch (e) {}
     }

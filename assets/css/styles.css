@@ -67,6 +67,11 @@ html[lang="en"] .mvp::after { content: "MVP is the first version of a product wi
 .lang-btn:hover { color: #57534e; }
 .lang-btn.is-active { color: #E65C00; font-weight: 600; }
 
+/* Language switch — fade content to the cream page bg (not white) */
+html { background-color: #EFECE5; }
+body { transition: opacity .4s ease; }
+html.lang-switching body { opacity: 0; }
+
 /* Larger spacing between sections on desktop (lg:mt-5 -> 4.25rem) */
 @media (min-width: 1024px) {
     .lg\:mt-5 { margin-top: 4.25rem !important; }
