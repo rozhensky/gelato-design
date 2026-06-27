@@ -345,7 +345,13 @@
                     b.onclick = function () {
                         if (lang === code) return;
                         try { localStorage.setItem('gelatoLang', code); } catch (e) {}
-                        location.reload();
+                        var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                        if (rm) { location.reload(); return; }
+                        try { sessionStorage.setItem('gelatoLangSwitch', '1'); } catch (e) {}
+                        var d = document.documentElement;
+                        d.style.transition = 'opacity .28s ease';
+                        d.style.opacity = '0';
+                        setTimeout(function () { location.reload(); }, 280);
                     };
                     host.appendChild(b);
                 })(opts[i][0], opts[i][1], host);
@@ -356,6 +362,12 @@
     function run() {
         if (active) translate(document.body);
         buildSwitch();
+        try {
+            if (sessionStorage.getItem('gelatoLangSwitch')) {
+                sessionStorage.removeItem('gelatoLangSwitch');
+                if (window.__gelatoReveal) requestAnimationFrame(function () { if (window.__gelatoReveal) { window.__gelatoReveal(); window.__gelatoReveal = null; } });
+            }
+        } catch (e) {}
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
